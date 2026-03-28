@@ -1,8 +1,9 @@
 import { useState } from "react";
+import BallotPage from "./ballot";
 import VotingAssistantHomepage from "./homepage";
 import ProfilePage, { type UserProfile } from "./profile";
 
-type Screen = "home" | "profile";
+type Screen = "home" | "ballot" | "profile";
 
 const initialProfile: UserProfile = {
   age: "",
@@ -21,6 +22,14 @@ export default function App() {
   return screen === "home" ? (
     <VotingAssistantHomepage
       onOpenProfile={() => setScreen("profile")}
+      onOpenBallot={() => setScreen("ballot")}
+      onOpenHome={() => setScreen("home")}
+    />
+  ) : screen === "ballot" ? (
+    <BallotPage
+      profile={profile}
+      onOpenProfile={() => setScreen("profile")}
+      onOpenBallot={() => setScreen("ballot")}
       onOpenHome={() => setScreen("home")}
     />
   ) : (
@@ -28,6 +37,7 @@ export default function App() {
       profile={profile}
       onChange={setProfile}
       onOpenProfile={() => setScreen("profile")}
+      onOpenBallot={() => setScreen("ballot")}
       onOpenHome={() => setScreen("home")}
     />
   );

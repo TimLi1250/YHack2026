@@ -1,10 +1,12 @@
 type VotingAssistantHomepageProps = {
   onOpenProfile: () => void;
+  onOpenBallot: () => void;
   onOpenHome: () => void;
 };
 
 export default function VotingAssistantHomepage({
   onOpenProfile,
+  onOpenBallot,
   onOpenHome,
 }: VotingAssistantHomepageProps) {
   const features = [
@@ -71,7 +73,11 @@ export default function VotingAssistantHomepage({
               <button className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:scale-[1.01]">
                 Get started
               </button>
-              <button className="rounded-2xl border border-white/40 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+              <button
+                type="button"
+                onClick={onOpenBallot}
+                className="rounded-2xl border border-white/40 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
                 View sample ballot
               </button>
             </div>
@@ -188,7 +194,11 @@ export default function VotingAssistantHomepage({
             <span className="text-lg">🔎</span>
             Explore
           </button>
-          <button type="button" className="flex flex-col items-center gap-1 text-xs text-slate-500">
+          <button
+            type="button"
+            onClick={onOpenBallot}
+            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+          >
             <span className="text-lg">🗂️</span>
             Ballot
           </button>

@@ -2,6 +2,7 @@ type ProfilePageProps = {
   profile: UserProfile;
   onChange: (profile: UserProfile) => void;
   onOpenProfile: () => void;
+  onOpenBallot: () => void;
   onOpenHome: () => void;
 };
 
@@ -46,6 +47,7 @@ export default function ProfilePage({
   profile,
   onChange,
   onOpenProfile,
+  onOpenBallot,
   onOpenHome,
 }: ProfilePageProps) {
   const updateField = (field: keyof UserProfile, value: string) => {
@@ -271,7 +273,11 @@ export default function ProfilePage({
             <span className="text-lg">🔎</span>
             Explore
           </button>
-          <button type="button" className="flex flex-col items-center gap-1 text-xs text-slate-500">
+          <button
+            type="button"
+            onClick={onOpenBallot}
+            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+          >
             <span className="text-lg">🗂️</span>
             Ballot
           </button>
