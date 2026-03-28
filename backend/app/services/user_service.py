@@ -1,27 +1,16 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
 from fastapi import HTTPException
 
+from app.config import USERS_FILE
 from app.schemas import UserCreate, UserRecord, UserUpdate
-from app.storage import USERS_FILE, load_json, save_json
-
-STATE_ALIASES = {
-    "ct": "Connecticut",
-    "connecticut": "Connecticut",
-    "ca": "California",
-    "california": "California",
-    "ny": "New York",
-    "new york": "New York",
-    "tx": "Texas",
-    "texas": "Texas",
-    "ma": "Massachusetts",
-    "massachusetts": "Massachusetts",
-}
+from app.services.geocode_service import normalize_city, normalize_state
+from app.storage import load_json, save_json
+from app.utils import now_iso
 
 INTEREST_TAGS: dict[str, list[str]] = {
     "taxes": ["Taxes"],
@@ -39,20 +28,6 @@ INTEREST_TAGS: dict[str, list[str]] = {
     "labor": ["Labor"],
     "student_debt": ["Student Debt"],
 }
-
-
-def now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def normalize_state(state: str) -> str:
-    key = re.sub(r"\s+", " ", state.strip().lower())
-    return STATE_ALIASES.get(key, state.strip().title())
-
-
-def normalize_city(city: str) -> str:
-    city = re.sub(r"\s+", " ", city.strip())
-    return city.title()
 
 
 def categorize_interests(interests: list[str]) -> dict[str, list[str]]:

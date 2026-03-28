@@ -182,3 +182,239 @@ class UserRecord(BaseModel):
     parsed_profile: dict[str, Any]
     created_at: str
     updated_at: str
+
+
+# =========================================================
+# Election / Ballot schemas
+# =========================================================
+
+ELECTION_TYPES = ["primary", "general", "special", "runoff"]
+ELECTION_LEVELS = ["city", "county", "state", "federal"]
+BALLOT_ITEM_TYPES = ["office", "proposition", "referendum", "bond", "judicial_retention"]
+
+
+class ElectionRecord(BaseModel):
+    id: str
+    name: str
+    election_date: str
+    election_type: str
+    level: str
+    state: str
+    city: str | None = None
+    county: str | None = None
+    registration_deadline: str | None = None
+    absentee_deadline: str | None = None
+    early_voting_start: str | None = None
+    early_voting_end: str | None = None
+    sources: list[dict[str, str]] = Field(default_factory=list)
+    created_at: str = ""
+
+
+class BallotItemRecord(BaseModel):
+    id: str
+    election_id: str
+    title: str
+    ballot_text: str
+    normalized_type: str  # one of BALLOT_ITEM_TYPES
+    election_type: str = ""
+    election_level: str = ""
+    office_name: str | None = None
+    district_name: str | None = None
+    plain_summary: str | None = None
+    simple_summary: str | None = None
+    one_sentence: str | None = None
+    yes_means: str | None = None
+    no_means: str | None = None
+    effect_on_user: str | None = None
+    effects_on_groups: list[dict[str, str]] = Field(default_factory=list)
+    sources: list[dict[str, str]] = Field(default_factory=list)
+    created_at: str = ""
+
+
+class BallotFetchRequest(BaseModel):
+    state: str
+    city: str
+    user_id: str | None = None
+
+
+class BallotSummarizeRequest(BaseModel):
+    user_id: str | None = None
+    reading_level: str = "plain"
+
+
+# =========================================================
+# Candidate schemas
+# =========================================================
+
+
+class CandidateRecord(BaseModel):
+    id: str
+    ballot_item_id: str | None = None
+    election_id: str | None = None
+    name: str
+    office: str = ""
+    party: str | None = None
+    incumbent: bool = False
+    bio_summary: str | None = None
+    positions: dict[str, str] = Field(default_factory=dict)
+    work_history_summary: str | None = None
+    controversy_summary: str | None = None
+    controversies: list[dict[str, Any]] = Field(default_factory=list)
+    comparison_summary: str | None = None
+    user_effect_summary: str | None = None
+    group_effects: list[dict[str, str]] = Field(default_factory=list)
+    campaign_site: str | None = None
+    photo_url: str | None = None
+    sources: list[dict[str, str]] = Field(default_factory=list)
+    created_at: str = ""
+
+
+class CandidateCompareRequest(BaseModel):
+    candidate_ids: list[str]
+    user_id: str | None = None
+
+
+class CandidateFetchRequest(BaseModel):
+    state: str
+    city: str
+    office: str | None = None
+
+
+# =========================================================
+# Legislation schemas
+# =========================================================
+
+LEGISLATION_DOC_TYPES = ["bill", "hearing", "floor_speech", "committee_meeting", "amendment"]
+
+
+class LegislationRecord(BaseModel):
+    id: str
+    doc_type: str  # one of LEGISLATION_DOC_TYPES
+    title: str
+    chamber: str | None = None
+    bill_number: str | None = None
+    jurisdiction: str | None = None
+    session: str | None = None
+    status: str | None = None
+    introduced_at: str | None = None
+    raw_text: str | None = None
+    plain_summary: str | None = None
+    vernacular_summary: str | None = None
+    effect_on_user: str | None = None
+    effects_on_groups: list[dict[str, str]] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    sources: list[dict[str, str]] = Field(default_factory=list)
+    source_url: str | None = None
+    created_at: str = ""
+
+
+class LegislationFetchRequest(BaseModel):
+    query: str | None = None
+    state: str | None = None
+    bill_number: str | None = None
+
+
+class LegislationSummarizeRequest(BaseModel):
+    user_id: str | None = None
+    reading_level: str = "plain"
+
+
+# =========================================================
+# Meeting schemas
+# =========================================================
+
+
+class MeetingRecord(BaseModel):
+    id: str
+    title: str
+    meeting_type: str = "congressional"  # congressional, committee, city_council, etc.
+    date: str | None = None
+    chamber: str | None = None
+    committee: str | None = None
+    transcript_text: str | None = None
+    summary: str | None = None
+    vernacular_summary: str | None = None
+    effect_on_user: str | None = None
+    effects_on_groups: list[dict[str, str]] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    sources: list[dict[str, str]] = Field(default_factory=list)
+    source_url: str | None = None
+    created_at: str = ""
+
+
+class MeetingFetchRequest(BaseModel):
+    chamber: str | None = None
+    committee: str | None = None
+    date_from: str | None = None
+    date_to: str | None = None
+
+
+class MeetingSummarizeRequest(BaseModel):
+    user_id: str | None = None
+    reading_level: str = "plain"
+
+
+# =========================================================
+# Notification schemas
+# =========================================================
+
+NOTIFICATION_TYPES = [
+    "registration_deadline",
+    "absentee_deadline",
+    "early_voting",
+    "election_day",
+    "poll_wait_alert",
+    "ballot_ready",
+]
+
+DELIVERY_CHANNELS = ["email", "sms", "push"]
+
+
+class NotificationCreate(BaseModel):
+    user_id: str
+    notification_type: str
+    scheduled_for: str | None = None
+    channel: str = "email"
+    message: str | None = None
+
+
+class NotificationRecord(BaseModel):
+    id: str
+    user_id: str
+    notification_type: str
+    scheduled_for: str | None = None
+    channel: str = "email"
+    message: str = ""
+    delivery_status: str = "pending"
+    created_at: str = ""
+
+
+class NotificationPreferencesUpdate(BaseModel):
+    channels: list[str] | None = None
+    enabled_types: list[str] | None = None
+
+
+# =========================================================
+# Source schemas
+# =========================================================
+
+
+class SourceRecord(BaseModel):
+    id: str
+    entity_type: str  # candidate, ballot, legislation, meeting
+    entity_id: str
+    label: str
+    url: str
+    snippet: str | None = None
+    retrieved_at: str = ""
+    trust_tier: str = "unverified"
+
+
+# =========================================================
+# Impact request
+# =========================================================
+
+
+class ImpactRequest(BaseModel):
+    user_id: str | None = None
+    perspective: str | None = None  # e.g. "students", "renters", "seniors"
