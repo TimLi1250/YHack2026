@@ -9,6 +9,26 @@ export default defineConfig({
         target: "http://127.0.0.1:8000",
         changeOrigin: true,
       },
+      "/ballots": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+      "/candidates": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+      "/legislation": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+      "/meetings": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+      "/notifications": {
+        target: "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
       "/health": {
         target: "http://127.0.0.1:8000",
         changeOrigin: true,
