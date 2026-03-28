@@ -4,7 +4,11 @@
     "name": "Alex Rivera",
     "age_range": "25-34",
     "ethnicity": "Latino / Hispanic",
-    "interests": ["Voting Rights", "Housing", "Education"],
+    "interests": [
+      "Voting Rights",
+      "Housing",
+      "Education"
+    ],
     "salary_range": "$50k-$100k",
     "gender": "Nonbinary",
     "state": "California",
@@ -16,6 +20,7 @@
     },
     "derived_traits": [
       "early-career adult",
+      "interested in voting rights",
       "interested in housing",
       "interested in education",
       "resident of San Francisco",
@@ -27,9 +32,15 @@
         "state": "California"
       },
       "interest_buckets": {
-        "housing": ["Housing"],
-        "education": ["Education"],
-        "voting_rights": ["Voting Rights"]
+        "voting_rights": [
+          "Voting Rights"
+        ],
+        "housing": [
+          "Housing"
+        ],
+        "education": [
+          "Education"
+        ]
       },
       "likely_groups": [
         "education_focused",
@@ -42,6 +53,6 @@
       }
     },
     "created_at": "2026-01-01T00:00:00+00:00",
-    "updated_at": "2026-01-01T00:00:00+00:00"
+    "updated_at": "2026-03-28T21:38:59.913701+00:00"
   }
 ]
