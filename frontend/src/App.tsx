@@ -1,5 +1,34 @@
+import { useState } from "react";
 import VotingAssistantHomepage from "./homepage";
+import ProfilePage, { type UserProfile } from "./profile";
+
+type Screen = "home" | "profile";
+
+const initialProfile: UserProfile = {
+  age: "",
+  ethnicity: "",
+  interests: "",
+  salary: "",
+  gender: "",
+  state: "",
+  city: "",
+};
 
 export default function App() {
-  return <VotingAssistantHomepage />;
+  const [screen, setScreen] = useState<Screen>("home");
+  const [profile, setProfile] = useState<UserProfile>(initialProfile);
+
+  return screen === "home" ? (
+    <VotingAssistantHomepage
+      onOpenProfile={() => setScreen("profile")}
+      onOpenHome={() => setScreen("home")}
+    />
+  ) : (
+    <ProfilePage
+      profile={profile}
+      onChange={setProfile}
+      onOpenProfile={() => setScreen("profile")}
+      onOpenHome={() => setScreen("home")}
+    />
+  );
 }

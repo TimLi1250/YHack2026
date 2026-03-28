@@ -1,4 +1,12 @@
-export default function VotingAssistantHomepage() {
+type VotingAssistantHomepageProps = {
+  onOpenProfile: () => void;
+  onOpenHome: () => void;
+};
+
+export default function VotingAssistantHomepage({
+  onOpenProfile,
+  onOpenHome,
+}: VotingAssistantHomepageProps) {
   const features = [
     {
       title: "Explain My Ballot",
@@ -168,19 +176,27 @@ export default function VotingAssistantHomepage() {
         </div>
 
         <div className="fixed bottom-0 mx-auto flex w-full max-w-md items-center justify-around border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
-          <button className="flex flex-col items-center gap-1 text-xs font-semibold text-blue-600">
+          <button
+            type="button"
+            onClick={onOpenHome}
+            className="flex flex-col items-center gap-1 text-xs font-semibold text-blue-600"
+          >
             <span className="text-lg">🏠</span>
             Home
           </button>
-          <button className="flex flex-col items-center gap-1 text-xs text-slate-500">
+          <button type="button" className="flex flex-col items-center gap-1 text-xs text-slate-500">
             <span className="text-lg">🔎</span>
             Explore
           </button>
-          <button className="flex flex-col items-center gap-1 text-xs text-slate-500">
+          <button type="button" className="flex flex-col items-center gap-1 text-xs text-slate-500">
             <span className="text-lg">🗂️</span>
             Ballot
           </button>
-          <button className="flex flex-col items-center gap-1 text-xs text-slate-500">
+          <button
+            type="button"
+            onClick={onOpenProfile}
+            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+          >
             <span className="text-lg">👤</span>
             Profile
           </button>
