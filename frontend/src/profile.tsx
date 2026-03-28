@@ -15,23 +15,31 @@ export type UserProfile = {
   city: string;
 };
 
-const fields: Array<{
-  id: keyof UserProfile;
-  label: string;
-  placeholder: string;
-  type?: string;
-}> = [
-  { id: "age", label: "Age", placeholder: "Enter your age", type: "number" },
-  { id: "ethnicity", label: "Ethnicity", placeholder: "How do you identify?" },
-  {
-    id: "interests",
-    label: "Interests",
-    placeholder: "Education, housing, transit, climate...",
-  },
-  { id: "salary", label: "Salary", placeholder: "Annual income", type: "number" },
-  { id: "gender", label: "Gender", placeholder: "Enter your gender" },
-  { id: "state", label: "State", placeholder: "State for voting information" },
-  { id: "city", label: "City", placeholder: "City for voting information" },
+const ageOptions = ["Under 18", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
+
+const salaryOptions = [
+  "Under $25k",
+  "$25k-$50k",
+  "$50k-$100k",
+  "$100k-$200k",
+  "$200k+",
+  "Prefer not to say",
+];
+
+const genderOptions = ["Male", "Female", "Nonbinary", "Other", "Prefer not to say"];
+
+const ethnicityOptions = [
+  "East Asian",
+  "South Asian / Indian",
+  "White",
+  "Black",
+  "Indigenous",
+  "Latino / Hispanic",
+  "Middle Eastern / North African",
+  "Pacific Islander",
+  "Multiracial",
+  "Other",
+  "Prefer not to say",
 ];
 
 export default function ProfilePage({
@@ -97,24 +105,116 @@ export default function ProfilePage({
             </div>
 
             <div className="mt-5 space-y-4">
-              {fields.map((field) => (
-                <label key={field.id} className="block">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-900">Age</span>
+                  <select
+                    value={profile.age}
+                    onChange={(event) => updateField("age", event.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  >
+                    <option value="">Select age range</option>
+                    {ageOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-900">Salary</span>
+                  <select
+                    value={profile.salary}
+                    onChange={(event) => updateField("salary", event.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  >
+                    <option value="">Select salary range</option>
+                    {salaryOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-900">
-                    {field.label}
+                    Ethnicity
                   </span>
+                  <select
+                    value={profile.ethnicity}
+                    onChange={(event) => updateField("ethnicity", event.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  >
+                    <option value="">Select ethnicity</option>
+                    {ethnicityOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-900">Gender</span>
+                  <select
+                    value={profile.gender}
+                    onChange={(event) => updateField("gender", event.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  >
+                    <option value="">Select gender</option>
+                    {genderOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold text-slate-900">Interests</span>
+                <textarea
+                  value={profile.interests}
+                  onChange={(event) => updateField("interests", event.target.value)}
+                  placeholder="Education, housing, transit, climate..."
+                  className="min-h-28 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                />
+              </label>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-900">State</span>
                   <input
-                    type={field.type ?? "text"}
-                    value={profile[field.id]}
-                    onChange={(event) => updateField(field.id, event.target.value)}
-                    placeholder={field.placeholder}
+                    type="text"
+                    value={profile.state}
+                    onChange={(event) => updateField("state", event.target.value)}
+                    placeholder="State for voting information"
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
                   />
                 </label>
-              ))}
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-900">City</span>
+                  <input
+                    type="text"
+                    value={profile.city}
+                    onChange={(event) => updateField("city", event.target.value)}
+                    placeholder="City for voting information"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  />
+                </label>
+              </div>
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <button className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.01]">
+              <button
+                type="button"
+                className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.01]"
+              >
                 Save profile
               </button>
               <button
