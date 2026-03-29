@@ -24,14 +24,21 @@
         "url": "https://www.googleapis.com/civicinfo/v2/voterinfo"
       }
     ],
-    "plain_summary": null,
-    "simple_summary": null,
-    "one_sentence": null,
-    "yes_means": null,
-    "no_means": null,
-    "effect_on_user": null,
+    "plain_summary": "Proposed Constitutional Amendment is a ballot item for Richmond, Virginia. This fallback summary is based only on the stored ballot text because the live AI model is unavailable.",
+    "simple_summary": "Question: Should the Constitution of Virginia be amended to allow the General Assembly to temporarily adopt new congressional districts to restore fairness in the upcoming elections, while ensuring Virginia's standard re",
+    "one_sentence": "Proposed Constitutional Amendment is a ballot item that should be reviewed carefully before voting.",
+    "yes_means": "A generated explanation is not available yet.",
+    "no_means": "A generated explanation is not available yet.",
+    "effect_on_user": "A personalized impact summary is not available yet.",
     "effects_on_groups": [],
     "fetched_at": "2026-03-29T11:34:11.429681+00:00",
-    "created_at": "2026-03-29T11:34:12.434357+00:00"
+    "created_at": "2026-03-29T11:34:12.434357+00:00",
+    "vernacular_summary": "In en, this item still needs a full plain-language explanation.",
+    "uncertainties": [
+      "AI summary unavailable; showing fallback text only."
+    ],
+    "cited_source_ids": [
+      "src_b9e5460037d8"
+    ]
   }
 ]

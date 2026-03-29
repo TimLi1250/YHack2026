@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { UserProfile } from "./profile";
 import { ai, type FactCheckEvidence, type FactCheckVerdict } from "./api";
 
@@ -8,6 +8,8 @@ const headingFontStyle = {
 
 type ExplorePageProps = {
   profile: UserProfile;
+  initialPrompt?: string;
+  onPromptConsumed?: () => void;
   onOpenProfile: () => void;
   onOpenExplore: () => void;
   onOpenBallot: () => void;
@@ -89,6 +91,8 @@ function buildProfileContext(profile: UserProfile) {
 
 export default function ExplorePage({
   profile,
+  initialPrompt,
+  onPromptConsumed,
   onOpenProfile,
   onOpenExplore,
   onOpenBallot,
@@ -113,6 +117,15 @@ export default function ExplorePage({
     }
     return profile.state || profile.city || "your area";
   }, [profile.city, profile.state]);
+
+  // Auto-send a prompt injected from the home screen
+  useEffect(() => {
+    if (initialPrompt) {
+      void sendMessage(initialPrompt);
+      onPromptConsumed?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPrompt]);
 
   const sendMessage = async (text: string) => {
     const trimmed = text.trim();

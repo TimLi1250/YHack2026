@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, type ChangeEvent, type FormEvent } from "react";
+import type { UserProfile } from "./profile";
 import {
   users,
   ballots,
@@ -48,8 +49,10 @@ type Tab = "home" | "explore" | "ballot" | "profile";
 type FormState = typeof defaultFormState;
 
 type VotingAssistantHomepageProps = {
+  profile: UserProfile;
   onOpenProfile: () => void;
   onOpenExplore: () => void;
+  onOpenExploreWithPrompt: (prompt: string) => void;
   onOpenBallot: () => void;
   onOpenHome: () => void;
 };
@@ -139,8 +142,10 @@ function formatDate(iso: string) {
 /* ═══════════════════════════════════════════════════════════════════ */
 
 export default function VotingAssistantHomepage({
+  profile,
   onOpenProfile,
   onOpenExplore,
+  onOpenExploreWithPrompt,
   onOpenBallot,
   onOpenHome,
 }: VotingAssistantHomepageProps) {
@@ -170,11 +175,72 @@ export default function VotingAssistantHomepage({
 
   const hasLocation = !!(user?.state && user?.city);
 
+  function buildCommunityPrompt() {
+    const location =
+      user?.city && user?.state
+        ? `${user.city}, ${user.state}`
+        : user?.state || "my area";
+    const electionName =
+      electionsList && electionsList.length > 0
+        ? electionsList[0].name
+        : "the upcoming election";
+    return `How could ${electionName} in ${location} impact different groups in the community? Please break down the potential effects on students, renters, families with children, seniors, small business owners, and low-income residents. Keep the explanation neutral and in plain language.`;
+  }
+
   const features = [
-    { title: "Explain My Ballot", desc: "Get plain-language summaries of races and ballot measures.", icon: "🗳️" },
-    { title: "Voting Info Near Me", desc: "Find registration help, deadlines, polling places, and ID requirements.", icon: "📍" },
-    { title: "Community Impact", desc: "See how an issue could affect students, renters, families, and seniors.", icon: "🌍" },
+    {
+      title: "Explain My Ballot",
+      desc: "Get plain-language summaries of races and ballot measures.",
+      icon: "🗳️",
+      onClick: onOpenBallot,
+      cta: "View ballot →",
+    },
+    {
+      title: "Voting Info Near Me",
+      desc: "Find registration help, deadlines, polling places, and ID requirements.",
+      icon: "📍",
+      onClick: onOpenBallot,
+      cta: "Find info →",
+    },
+    {
+      title: "Community Impact",
+      desc: "See how the current election could affect students, renters, families, and seniors.",
+      icon: "🌍",
+      onClick: () => onOpenExploreWithPrompt(buildCommunityPrompt()),
+      cta: "Ask AI →",
+    },
   ];
+
+  /* ── sync profile prop → internal user so check-in refreshes ───────── */
+
+  useEffect(() => {
+    if (!profile.state || !profile.city) return;
+    setUser((prev) => {
+      if (!prev) {
+        return {
+          id: "profile-only",
+          state: profile.state,
+          city: profile.city,
+          street_address: profile.street_address ?? null,
+          language_preference: profile.language_preference ?? "en",
+          name: profile.name ?? null,
+          age_range: null,
+          ethnicity: null,
+          interests: [],
+          salary_range: null,
+          gender: null,
+        } as unknown as UserRecord;
+      }
+      if (
+        prev.state === profile.state &&
+        prev.city === profile.city &&
+        (prev.street_address ?? "") === (profile.street_address ?? "")
+      ) {
+        return prev;
+      }
+      return { ...prev, state: profile.state, city: profile.city, street_address: profile.street_address ?? null };
+    });
+  }, [profile.state, profile.city, profile.street_address]);
 
   /* ── load user on mount ───────────────────────────────────────────── */
 
@@ -392,32 +458,7 @@ export default function VotingAssistantHomepage({
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Welcome back</p>
-            <h2 className="mt-2 text-2xl font-bold leading-tight text-slate-900" style={headingFontStyle}>
-              Start with what matters most right now.
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-slate-500">
-              Open the ballot hub for logistics, or jump into Explore when you want quick AI help.
-            </p>
 
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={onOpenExplore}
-                className="rounded-[1.5rem] bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              >
-                Open Explore
-              </button>
-              <button
-                type="button"
-                onClick={onOpenBallot}
-                className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                Open Ballot
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* ── MAIN CONTENT ────────────────────────────────────────── */}
@@ -520,22 +561,6 @@ export default function VotingAssistantHomepage({
                     ))
                   )}
                 </div>
-              </div>
-
-              {/* Impact mode CTA */}
-              <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Impact mode</p>
-                <h4 className="mt-2 text-xl font-bold text-slate-900" style={headingFontStyle}>Explore what matters to your community</h4>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  View ballot measures through lenses like students, renters, families, and public transit users.
-                </p>
-                <button
-                  type="button"
-                  onClick={onOpenExplore}
-                  className="mt-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                >
-                  Ask in Explore
-                </button>
               </div>
 
               {/* Polling Location card */}
@@ -699,49 +724,31 @@ export default function VotingAssistantHomepage({
 
           <div className="space-y-4">
             {features.map((feature) => (
-              <div
+              <button
                 key={feature.title}
-                className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5"
+                type="button"
+                onClick={feature.onClick}
+                className="w-full rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 text-left"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-2xl">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-2xl">
                     {feature.icon}
                   </div>
-                  <div>
-                    <h4 className="text-base font-semibold" style={headingFontStyle}>
-                      {feature.title}
-                    </h4>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-base font-semibold" style={headingFontStyle}>
+                        {feature.title}
+                      </h4>
+                      <span className="shrink-0 text-xs font-semibold text-slate-400">{feature.cta}</span>
+                    </div>
                     <p className="mt-1 text-sm leading-6 text-slate-600">{feature.desc}</p>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
 
-          <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Impact mode</p>
-                <h4 className="mt-1 text-lg font-semibold text-slate-900" style={headingFontStyle}>
-                  Explore what matters to your community
-                </h4>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  View ballot measures through lenses like students, renters, families, and public
-                  transit users.
-                </p>
-              </div>
-              <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                New
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onOpenExplore}
-              className="mt-4 rounded-[1.5rem] bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              Ask about your ballot
-            </button>
-          </div>
+
         </div>
 
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
