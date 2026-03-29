@@ -66,6 +66,14 @@ const interestOptions = [
   "Student Debt",
 ];
 
+const languageOptions = [
+  { value: "en", label: "English" },
+  { value: "es", label: "Spanish" },
+  { value: "zh", label: "Chinese" },
+  { value: "tl", label: "Tagalog" },
+  { value: "vi", label: "Vietnamese" },
+];
+
 const headingFontStyle = {
   fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 };
@@ -304,6 +312,28 @@ export default function ProfilePage({
                   placeholder="e.g. Los Angeles"
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-300 focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
                 />
+              </label>
+
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Language
+                </span>
+                <div className="relative group">
+                  <select
+                    value={profile.language_preference}
+                    onChange={(event) => updateField("language_preference", event.target.value)}
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
+                  >
+                    {languageOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 transition-colors group-focus-within:text-slate-900">
+                    ˅
+                  </span>
+                </div>
               </label>
             </div>
           </section>

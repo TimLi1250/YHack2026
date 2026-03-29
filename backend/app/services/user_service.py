@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any
 from uuid import uuid4
@@ -11,6 +12,8 @@ from app.schemas import UserCreate, UserRecord, UserUpdate
 from app.services.geocode_service import normalize_city, normalize_state
 from app.storage import load_json, save_json
 from app.utils import now_iso
+
+logger = logging.getLogger(__name__)
 
 INTEREST_TAGS: dict[str, list[str]] = {
     "taxes": ["Taxes"],
@@ -115,7 +118,26 @@ def _find_user_index(users: list[dict[str, Any]], user_id: str) -> int | None:
     return None
 
 
-def create_user(payload: UserCreate) -> dict[str, Any]:
+async def _refresh_user_source_packets(user: dict[str, Any]) -> None:
+    state = user.get("state")
+    city = user.get("city")
+    street_address = user.get("street_address")
+    if not state or not city:
+        return
+
+    try:
+        from app.services.ballot_service import get_upcoming_ballots
+        from app.services.candidate_service import get_candidates
+        from app.services.election_service import get_upcoming_elections
+
+        await get_upcoming_elections(state, city)
+        await get_upcoming_ballots(state, city, street_address=street_address)
+        await get_candidates(state=state, city=city, street_address=street_address)
+    except Exception as exc:
+        logger.warning("Could not refresh civic source packets for user %s: %s", user.get("id"), exc)
+
+
+async def create_user(payload: UserCreate) -> dict[str, Any]:
     users = load_json(USERS_FILE)
     timestamp = now_iso()
 
@@ -141,6 +163,7 @@ def create_user(payload: UserCreate) -> dict[str, Any]:
 
     users.append(user)
     save_json(USERS_FILE, users)
+    await _refresh_user_source_packets(user)
     return user
 
 
@@ -156,7 +179,7 @@ def list_users() -> list[dict[str, Any]]:
     return load_json(USERS_FILE)
 
 
-def update_user(user_id: str, payload: UserUpdate) -> dict[str, Any]:
+async def update_user(user_id: str, payload: UserUpdate) -> dict[str, Any]:
     users = load_json(USERS_FILE)
     idx = _find_user_index(users, user_id)
     if idx is None:
@@ -197,4 +220,5 @@ def update_user(user_id: str, payload: UserUpdate) -> dict[str, Any]:
 
     users[idx] = merged
     save_json(USERS_FILE, users)
+    await _refresh_user_source_packets(merged)
     return merged

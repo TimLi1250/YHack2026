@@ -7,9 +7,10 @@ from uuid import uuid4
 import httpx
 
 from app.config import CANDIDATES_FILE, GOOGLE_CIVIC_API_KEY
+from app.schemas import AIUserContext, SourceCitation
 from app.services.geocode_service import get_civic_address, normalize_city, normalize_state
-from app.services.llm_service import compare_candidates, summarize_candidate
-from app.services.source_service import add_source
+from app.services.llm_service import compare_candidate_records, summarize_candidate_record
+from app.services.source_service import add_source, get_sources_for_entity
 from app.services.user_service import get_user
 from app.storage import append_json, find_by_id, load_json, save_json
 from app.utils import now_iso
@@ -140,40 +141,50 @@ async def build_candidate_profile(
     if candidate is None or candidate_idx < 0:
         return {"error": "Candidate not found"}
 
-    user_traits: list[str] = []
+    user_context: AIUserContext | None = None
     if user_id:
         try:
             user = get_user(user_id)
-            user_traits = user.get("derived_traits", [])
+            user_context = AIUserContext(
+                user_id=user.get("id"),
+                name=user.get("name"),
+                age_range=user.get("age_range"),
+                ethnicity=user.get("ethnicity"),
+                interests=user.get("interests", []),
+                salary_range=user.get("salary_range"),
+                gender=user.get("gender"),
+                state=user.get("state"),
+                city=user.get("city"),
+                street_address=user.get("street_address"),
+                language_preference=user.get("language_preference", "en"),
+                derived_traits=user.get("derived_traits", []),
+            )
         except Exception:
             pass
 
-    # Build info string from existing data
-    info_parts = [
-        f"Name: {candidate.get('name', '')}",
-        f"Party: {candidate.get('party', 'Unknown')}",
-        f"Office: {candidate.get('office', '')}",
+    sources = [
+        SourceCitation.model_validate(source)
+        for source in get_sources_for_entity("candidate", candidate_id)
     ]
-    if candidate.get("campaign_site"):
-        info_parts.append(f"Campaign website: {candidate['campaign_site']}")
 
-    candidate_info = "\n".join(info_parts)
-
-    summary = await summarize_candidate(
-        candidate_info=candidate_info,
-        office=candidate.get("office", ""),
-        user_traits=user_traits or None,
+    summary = await summarize_candidate_record(
+        candidate_record=candidate,
+        user_context=user_context,
+        sources=sources,
     )
 
-    if isinstance(summary, dict) and "raw_response" not in summary:
-        candidate["bio_summary"] = summary.get("bio_summary")
-        candidate["positions"] = summary.get("positions", {})
-        candidate["work_history_summary"] = summary.get("work_history_summary")
-        candidate["controversy_summary"] = summary.get("controversy_summary")
-        candidate["user_effect_summary"] = summary.get("user_effect_summary")
-        candidate["group_effects"] = summary.get("group_effects", [])
-        candidates[candidate_idx] = candidate
-        save_json(CANDIDATES_FILE, candidates)
+    candidate["bio_summary"] = summary.bio_summary
+    candidate["positions"] = summary.positions
+    candidate["work_history_summary"] = summary.work_history_summary
+    candidate["controversy_summary"] = summary.controversy_summary
+    candidate["controversies"] = summary.controversies
+    candidate["quoted_statements"] = summary.quoted_statements
+    candidate["user_effect_summary"] = summary.user_effect_summary
+    candidate["group_effects"] = summary.group_effects
+    candidate["uncertainties"] = summary.uncertainties
+    candidate["cited_source_ids"] = summary.cited_source_ids
+    candidates[candidate_idx] = candidate
+    save_json(CANDIDATES_FILE, candidates)
 
     return candidate
 
@@ -201,8 +212,40 @@ async def compare_candidates_by_ids(
         for c in selected
     ]
 
-    comparison = await compare_candidates(candidates_info, office)
-    return comparison
+    user_context: AIUserContext | None = None
+    if user_id:
+        try:
+            user = get_user(user_id)
+            user_context = AIUserContext(
+                user_id=user.get("id"),
+                name=user.get("name"),
+                age_range=user.get("age_range"),
+                ethnicity=user.get("ethnicity"),
+                interests=user.get("interests", []),
+                salary_range=user.get("salary_range"),
+                gender=user.get("gender"),
+                state=user.get("state"),
+                city=user.get("city"),
+                street_address=user.get("street_address"),
+                language_preference=user.get("language_preference", "en"),
+                derived_traits=user.get("derived_traits", []),
+            )
+        except Exception:
+            pass
+
+    source_map: dict[str, SourceCitation] = {}
+    for candidate in selected:
+        for source in get_sources_for_entity("candidate", candidate["id"]):
+            citation = SourceCitation.model_validate(source)
+            source_map[citation.id] = citation
+
+    comparison = await compare_candidate_records(
+        candidates_info=candidates_info,
+        office=office,
+        user_context=user_context,
+        sources=list(source_map.values()),
+    )
+    return comparison.model_dump()
 
 
 def add_candidate(candidate: dict[str, Any]) -> dict[str, Any]:

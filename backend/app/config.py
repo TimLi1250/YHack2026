@@ -25,7 +25,7 @@ DEFAULT_READING_LEVEL = "plain"
 
 # --------------- API keys (env vars) ---------------
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 GOOGLE_CIVIC_API_KEY: str = os.getenv("GOOGLE_CIVIC_API_KEY", "")
 GEOCODE_API_KEY: str = os.getenv("GEOCODE_API_KEY", "")
 CONGRESS_API_KEY: str = os.getenv("CONGRESS_API_KEY", "")
@@ -33,3 +33,4 @@ CONGRESS_API_KEY: str = os.getenv("CONGRESS_API_KEY", "")
 # --------------- LLM settings ---------------
 LLM_MAX_TOKENS: int = 2048
 LLM_TEMPERATURE: float = 0.3
+LLM_TIMEOUT_SECONDS: int = int(os.getenv("LLM_TIMEOUT_SECONDS", "60"))
