@@ -70,7 +70,7 @@ function buildAssistantReply(prompt: string, profile: UserProfile) {
 }
 
 function buildFactCheckFallback(claim: string) {
-  return `I could not verify "${claim}" from the grounded source packet right now. Review the attached sources or try a more specific local claim.`;
+  return `I could not complete a live fact-check for "${claim}" right now. Review the attached sources or try a more specific claim.`;
 }
 
 function buildProfileContext(profile: UserProfile) {
@@ -500,48 +500,21 @@ export default function ExplorePage({
                           </div>
                         ) : null}
                         <p>{message.text}</p>
-                        {message.evidence_for?.length ? (
-                          <div className="mt-3 rounded-2xl bg-white/70 px-3 py-3 text-xs text-slate-600">
-                            <p className="font-semibold uppercase tracking-[0.14em] text-slate-500">
-                              Supporting evidence
-                            </p>
-                            <div className="mt-2 space-y-2">
-                              {message.evidence_for.map((item, itemIndex) => (
-                                <p key={`${item.source_id}-for-${itemIndex}`}>{item.finding}</p>
-                              ))}
-                            </div>
-                          </div>
-                        ) : null}
-                        {message.evidence_against?.length ? (
-                          <div className="mt-3 rounded-2xl bg-white/70 px-3 py-3 text-xs text-slate-600">
-                            <p className="font-semibold uppercase tracking-[0.14em] text-slate-500">
-                              Contradicting evidence
-                            </p>
-                            <div className="mt-2 space-y-2">
-                              {message.evidence_against.map((item, itemIndex) => (
-                                <p key={`${item.source_id}-against-${itemIndex}`}>{item.finding}</p>
-                              ))}
-                            </div>
-                          </div>
-                        ) : null}
                         {message.uncertainties?.length ? (
                           <div className="mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-slate-500">
                             {message.uncertainties.join(" ")}
                           </div>
                         ) : null}
                         {message.citations?.length ? (
-                          <div className="mt-3 space-y-1">
-                            {message.citations.map((citation) => (
-                              <a
-                                key={citation.id}
-                                href={citation.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="block text-xs font-semibold text-blue-600 underline-offset-2 hover:underline"
-                              >
-                                {citation.label}
-                              </a>
-                            ))}
+                          <div className="mt-3">
+                            <a
+                              href={message.citations[0].url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block text-xs font-semibold text-blue-600 underline-offset-2 hover:underline"
+                            >
+                              {message.citations[0].label}
+                            </a>
                           </div>
                         ) : null}
                       </div>
@@ -549,7 +522,7 @@ export default function ExplorePage({
                     {isSending ? (
                       <div className="rounded-3xl bg-slate-50 px-4 py-4 text-sm text-slate-500">
                         {assistantMode === "fact-check"
-                          ? "BallotBridge is checking the source packet..."
+                          ? "BallotBridge is checking web and local sources..."
                           : "BallotBridge is thinking..."}
                       </div>
                     ) : null}
