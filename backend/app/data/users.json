@@ -11,25 +11,25 @@
     ],
     "salary_range": "$50k-$100k",
     "gender": "Nonbinary",
-    "state": "California",
-    "city": "San Francisco",
+    "state": "Virginia",
+    "city": "Richmond",
     "language_preference": "en",
     "normalized_location": {
-      "city": "San Francisco",
-      "state": "California"
+      "city": "Richmond",
+      "state": "Virginia"
     },
     "derived_traits": [
       "early-career adult",
       "interested in voting rights",
       "interested in housing",
       "interested in education",
-      "resident of San Francisco",
-      "voter in California"
+      "resident of Richmond",
+      "voter in Virginia"
     ],
     "parsed_profile": {
       "normalized_location": {
-        "city": "San Francisco",
-        "state": "California"
+        "city": "Richmond",
+        "state": "Virginia"
       },
       "interest_buckets": {
         "voting_rights": [
@@ -53,6 +53,7 @@
       }
     },
     "created_at": "2026-01-01T00:00:00+00:00",
-    "updated_at": "2026-03-28T21:38:59.913701+00:00"
+    "updated_at": "2026-03-29T03:22:49.802977+00:00",
+    "street_address": "123 Main St"
   }
 ]

@@ -6,7 +6,7 @@ from uuid import uuid4
 
 import httpx
 
-from app.config import MEETINGS_FILE
+from app.config import CONGRESS_API_KEY, MEETINGS_FILE
 from app.services.llm_service import summarize_meeting
 from app.services.source_service import add_source
 from app.services.user_service import get_user
@@ -29,7 +29,7 @@ async def fetch_congressional_hearings(
 
     try:
         url = f"{CONGRESS_API_BASE}/hearing/{congress}"
-        params: dict[str, Any] = {"limit": limit, "format": "json"}
+        params: dict[str, Any] = {"limit": limit, "format": "json", "api_key": CONGRESS_API_KEY}
         if chamber:
             params["chamber"] = chamber
 

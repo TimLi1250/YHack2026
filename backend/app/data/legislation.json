@@ -1,1 +1,192 @@
-[]
+[
+  {
+    "id": "leg_aec9075629b0",
+    "doc_type": "bill",
+    "title": "Tennessee Valley Authority Salary Transparency Act",
+    "chamber": "House",
+    "bill_number": "hr144",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Received in the Senate and Read twice and referred to the Committee on Environment and Public Works.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/144?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/144?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160241+00:00"
+  },
+  {
+    "id": "leg_4f0db22a9094",
+    "doc_type": "bill",
+    "title": "Protecting our Communities from Sexual Predators Act",
+    "chamber": "House",
+    "bill_number": "hr134",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Referred to the House Committee on the Judiciary.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/134?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/134?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160259+00:00"
+  },
+  {
+    "id": "leg_1e3fa5c7c204",
+    "doc_type": "bill",
+    "title": "High Rise Fire Sprinkler Incentive Act of 2025",
+    "chamber": "House",
+    "bill_number": "hr173",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Referred to the House Committee on Ways and Means.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/173?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/173?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160267+00:00"
+  },
+  {
+    "id": "leg_afe8af9c92b3",
+    "doc_type": "bill",
+    "title": "Inaction Has Consequences Act",
+    "chamber": "House",
+    "bill_number": "hr209",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Referred to the House Committee on House Administration.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/209?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/209?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160272+00:00"
+  },
+  {
+    "id": "leg_925bda46309c",
+    "doc_type": "bill",
+    "title": "Proposing an amendment to the Constitution of the United States to require that the Supreme Court of the United States be composed of nine justices.",
+    "chamber": "House",
+    "bill_number": "hjres1",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Referred to the House Committee on the Judiciary.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hjres/1?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hjres/1?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160277+00:00"
+  },
+  {
+    "id": "leg_c987479b1c8e",
+    "doc_type": "bill",
+    "title": "Housing Fairness Act of 2025",
+    "chamber": "House",
+    "bill_number": "hr68",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Referred to the House Committee on Financial Services.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/68?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/68?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160282+00:00"
+  },
+  {
+    "id": "leg_4b141b28b841",
+    "doc_type": "bill",
+    "title": "MAPWaters Act of 2025",
+    "chamber": "House",
+    "bill_number": "hr187",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Became Public Law No: 119-62.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/187?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/187?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160295+00:00"
+  },
+  {
+    "id": "leg_d7e1af677bc1",
+    "doc_type": "bill",
+    "title": "Fair Lending for All Act",
+    "chamber": "House",
+    "bill_number": "hr166",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Referred to the House Committee on Financial Services.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/166?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/166?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160300+00:00"
+  },
+  {
+    "id": "leg_a0074a82c7e6",
+    "doc_type": "bill",
+    "title": "SAVE Act",
+    "chamber": "House",
+    "bill_number": "hr22",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Received in the Senate.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/22?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/22?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160305+00:00"
+  },
+  {
+    "id": "leg_3c6e6b1033ab",
+    "doc_type": "bill",
+    "title": "Protection of Women and Girls in Sports Act of 2025",
+    "chamber": "House",
+    "bill_number": "hr28",
+    "jurisdiction": "federal",
+    "session": "119",
+    "status": "Received in the Senate.",
+    "introduced_at": null,
+    "source_url": "https://api.congress.gov/v3/bill/119/hr/28?format=json",
+    "sources": [
+      {
+        "label": "Congress.gov",
+        "url": "https://api.congress.gov/v3/bill/119/hr/28?format=json"
+      }
+    ],
+    "created_at": "2026-03-29T00:39:46.160310+00:00"
+  }
+]

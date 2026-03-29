@@ -130,6 +130,7 @@ def create_user(payload: UserCreate) -> dict[str, Any]:
         gender=payload.gender,
         state=payload.state,
         city=payload.city,
+        street_address=payload.street_address,
         language_preference=payload.language_preference,
         normalized_location=parsed_profile["normalized_location"],
         derived_traits=derive_traits(payload),
@@ -174,6 +175,7 @@ def update_user(user_id: str, payload: UserUpdate) -> dict[str, Any]:
         gender=merged.get("gender"),
         state=merged["state"],
         city=merged["city"],
+        street_address=merged.get("street_address"),
         language_preference=merged.get("language_preference", "en"),
     )
 
@@ -186,6 +188,7 @@ def update_user(user_id: str, payload: UserUpdate) -> dict[str, Any]:
     merged["gender"] = validated.gender
     merged["state"] = validated.state
     merged["city"] = validated.city
+    merged["street_address"] = validated.street_address
     merged["language_preference"] = validated.language_preference
     merged["normalized_location"] = parsed_profile["normalized_location"]
     merged["derived_traits"] = derive_traits(validated)

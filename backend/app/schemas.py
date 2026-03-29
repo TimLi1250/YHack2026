@@ -84,6 +84,7 @@ class UserCreate(BaseModel):
     gender: GenderValue | None = None
     state: str
     city: str
+    street_address: str | None = None
     language_preference: str = "en"
 
     @field_validator("name")
@@ -163,6 +164,7 @@ class UserUpdate(BaseModel):
     gender: GenderValue | None = None
     state: str | None = None
     city: str | None = None
+    street_address: str | None = None
     language_preference: str | None = None
 
 
@@ -176,6 +178,7 @@ class UserRecord(BaseModel):
     gender: GenderValue | None = None
     state: str
     city: str
+    street_address: str | None = None
     language_preference: str = "en"
     normalized_location: dict[str, str]
     derived_traits: list[str]

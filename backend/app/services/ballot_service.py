@@ -7,7 +7,7 @@ from uuid import uuid4
 import httpx
 
 from app.config import BALLOTS_FILE, GOOGLE_CIVIC_API_KEY
-from app.services.geocode_service import normalize_city, normalize_state
+from app.services.geocode_service import get_civic_address, normalize_city, normalize_state
 from app.services.llm_service import summarize_ballot_text
 from app.services.source_service import add_source
 from app.services.user_service import get_user
@@ -23,13 +23,14 @@ async def fetch_ballots_for_location(
     state: str,
     city: str,
     election_id: str | None = None,
+    street_address: str | None = None,
 ) -> list[dict[str, Any]]:
     """Fetch ballot items from Google Civic Info API (voterinfo endpoint)."""
     if not GOOGLE_CIVIC_API_KEY:
         logger.warning("GOOGLE_CIVIC_API_KEY not set – returning cached ballots only")
         return []
 
-    address = f"{normalize_city(city)}, {normalize_state(state)}"
+    address = get_civic_address(city, state, street_address)
     params: dict[str, str] = {
         "key": GOOGLE_CIVIC_API_KEY,
         "address": address,
@@ -50,42 +51,57 @@ async def fetch_ballots_for_location(
         eid = election_id or f"election_{election_info.get('id', 'unknown')}"
         election_name = election_info.get("name", "")
 
-        # Ballot measures / referenda
+        # Ballot measures / referenda and candidate races
         for contest in data.get("contests", []):
             contest_type = contest.get("type", "")
-            if contest_type == "Referendum":
+            contest_type_lower = contest_type.lower()
+            level_list = contest.get("level", [])
+            level = level_list[0] if level_list else contest.get("district", {}).get("scope", "")
+
+            is_measure = contest_type_lower in ("referendum", "ballot-measure")
+            if is_measure:
+                title = (
+                    contest.get("referendumTitle")
+                    or contest.get("ballotTitle")
+                    or contest.get("referendumSubtitle")
+                    or "Ballot Measure"
+                )
+                text = contest.get("referendumText") or contest.get("referendumBrief", "")
                 item = {
                     "id": f"ballot_{uuid4().hex[:12]}",
                     "election_id": eid,
-                    "title": contest.get("referendumTitle", contest.get("office", "")),
-                    "ballot_text": contest.get("referendumText", ""),
+                    "title": title,
+                    "ballot_text": text,
                     "normalized_type": "proposition",
                     "election_type": _infer_type(election_name),
-                    "election_level": contest.get("level", [""])[0] if contest.get("level") else "",
+                    "election_level": level,
                     "office_name": None,
                     "district_name": contest.get("district", {}).get("name"),
                     "sources": [{"label": "Google Civic Info API", "url": VOTER_INFO_URL}],
                     "created_at": now_iso(),
                 }
                 results.append(item)
-            elif contest_type == "General":
-                # This is a candidate race — store as office-type ballot item
+            else:
+                # Candidate race (General, Primary, Runoff, Special, etc.)
+                office = contest.get("office", "")
+                if not office:
+                    continue
                 item = {
                     "id": f"ballot_{uuid4().hex[:12]}",
                     "election_id": eid,
-                    "title": contest.get("office", ""),
-                    "ballot_text": f"Election for {contest.get('office', '')}",
+                    "title": office,
+                    "ballot_text": f"{contest_type or 'Election'} for {office}",
                     "normalized_type": "office",
-                    "election_type": _infer_type(election_name),
-                    "election_level": contest.get("level", [""])[0] if contest.get("level") else "",
-                    "office_name": contest.get("office"),
+                    "election_type": contest_type_lower if contest_type_lower in ("primary", "runoff", "special") else _infer_type(election_name),
+                    "election_level": level,
+                    "office_name": office,
                     "district_name": contest.get("district", {}).get("name"),
                     "sources": [{"label": "Google Civic Info API", "url": VOTER_INFO_URL}],
                     "created_at": now_iso(),
                 }
                 results.append(item)
     except httpx.HTTPError as e:
-        logger.error("Error fetching ballot info: %s", e)
+        logger.warning("Error fetching ballot info: %s", e)
 
     return results
 
@@ -101,21 +117,39 @@ def _infer_type(name: str) -> str:
     return "general"
 
 
-async def get_upcoming_ballots(state: str, city: str) -> list[dict[str, Any]]:
+async def get_upcoming_ballots(state: str, city: str, street_address: str | None = None) -> list[dict[str, Any]]:
     """Return ballots for a state/city, fetching from API if cache is empty."""
-    norm_state = normalize_state(state)
+    # Avoid circular import
+    from app.services.election_service import fetch_all_upcoming_elections
+
     norm_city = normalize_city(city)
 
     ballots = load_json(BALLOTS_FILE)
-    # Simple filter: check if any ballots match this region
-    matching = [
-        b for b in ballots
-        if b.get("district_name", "").lower() == norm_city.lower()
-        or b.get("election_level", "") != ""
-    ]
+    # Only reuse cache when we have items for this exact city
+    matching = [b for b in ballots if b.get("district_name", "").lower() == norm_city.lower()]
 
     if not matching:
-        fetched = await fetch_ballots_for_location(state, city)
+        # Step 1: try without electionId — picks the next active election automatically
+        fetched = await fetch_ballots_for_location(state, city, street_address=street_address)
+
+        # Step 2: if that failed, iterate through known election IDs
+        # Google voterinfo often needs an explicit electionId even when VIP data exists
+        if not fetched:
+            try:
+                elections = await fetch_all_upcoming_elections()
+                for election in elections:
+                    eid = election.get("id")
+                    if not eid:
+                        continue
+                    items = await fetch_ballots_for_location(
+                        state, city, election_id=eid, street_address=street_address
+                    )
+                    if items:
+                        fetched.extend(items)
+                        break  # stop at first election that returns data
+            except Exception as exc:
+                logger.warning("Could not iterate elections for ballot lookup: %s", exc)
+
         if fetched:
             for b in fetched:
                 ballots.append(b)
