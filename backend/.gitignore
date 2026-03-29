@@ -1,1 +1,4 @@
 *.env
+app/data/ballots.json
+app/data/sources.json
+dist/
