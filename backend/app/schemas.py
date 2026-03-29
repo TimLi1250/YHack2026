@@ -501,6 +501,10 @@ class LegislationSummaryOutput(BaseModel):
     uncertainties: list[str] = Field(default_factory=list)
 
 
+class TagsOutput(BaseModel):
+    tags: list[str] = Field(default_factory=list)
+
+
 class MeetingSummaryOutput(BaseModel):
     summary: str
     vernacular_summary: str | None = None

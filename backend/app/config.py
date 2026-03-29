@@ -25,7 +25,7 @@ DEFAULT_READING_LEVEL = "plain"
 
 # --------------- API keys (env vars) ---------------
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
 GOOGLE_CIVIC_API_KEY: str = os.getenv("GOOGLE_CIVIC_API_KEY", "")
 GEOCODE_API_KEY: str = os.getenv("GEOCODE_API_KEY", "")
 CONGRESS_API_KEY: str = os.getenv("CONGRESS_API_KEY", "")

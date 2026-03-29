@@ -1,10 +1,11 @@
 import { useState } from "react";
 import BallotPage from "./ballot";
+import CongressPage from "./congress";
 import ExplorePage from "./explore";
 import VotingAssistantHomepage from "./homepage";
 import ProfilePage, { type UserProfile } from "./profile";
 
-type Screen = "home" | "explore" | "ballot" | "profile";
+type Screen = "home" | "explore" | "ballot" | "congress" | "profile";
 
 const initialProfile: UserProfile = {
   name: "",
@@ -36,6 +37,7 @@ export default function App() {
       onOpenExplore={() => setScreen("explore")}
       onOpenExploreWithPrompt={openExploreWithPrompt}
       onOpenBallot={() => setScreen("ballot")}
+      onOpenCongress={() => setScreen("congress")}
       onOpenHome={() => setScreen("home")}
     />
   ) : screen === "explore" ? (
@@ -46,6 +48,7 @@ export default function App() {
       onOpenProfile={() => setScreen("profile")}
       onOpenExplore={() => setScreen("explore")}
       onOpenBallot={() => setScreen("ballot")}
+      onOpenCongress={() => setScreen("congress")}
       onOpenHome={() => setScreen("home")}
     />
   ) : screen === "ballot" ? (
@@ -54,6 +57,16 @@ export default function App() {
       onOpenProfile={() => setScreen("profile")}
       onOpenExplore={() => setScreen("explore")}
       onOpenBallot={() => setScreen("ballot")}
+      onOpenCongress={() => setScreen("congress")}
+      onOpenHome={() => setScreen("home")}
+    />
+  ) : screen === "congress" ? (
+    <CongressPage
+      profile={profile}
+      onOpenProfile={() => setScreen("profile")}
+      onOpenExplore={() => setScreen("explore")}
+      onOpenBallot={() => setScreen("ballot")}
+      onOpenCongress={() => setScreen("congress")}
       onOpenHome={() => setScreen("home")}
     />
   ) : (
@@ -63,6 +76,7 @@ export default function App() {
       onOpenProfile={() => setScreen("profile")}
       onOpenExplore={() => setScreen("explore")}
       onOpenBallot={() => setScreen("ballot")}
+      onOpenCongress={() => setScreen("congress")}
       onOpenHome={() => setScreen("home")}
     />
   );

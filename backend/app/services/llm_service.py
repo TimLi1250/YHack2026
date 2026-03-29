@@ -27,6 +27,7 @@ from app.schemas import (
     LegislationSummaryOutput,
     MeetingSummaryOutput,
     SourceCitation,
+    TagsOutput,
 )
 
 logger = logging.getLogger(__name__)
@@ -1148,6 +1149,35 @@ Rules:
         return local_result
 
     fallback = _fallback_fact_check_response(claim, language, sources)
+
+
+async def generate_tags(title: str, summary: str | None = None) -> list[str]:
+    """Use LLM to generate interest/topic tags for a bill or meeting."""
+    text = summary or title
+    prompt = f"""
+Task: generate concise interest/topic tags for a piece of civic content.
+
+Content title:
+{title}
+
+Content summary or text:
+{text}
+
+Rules:
+- Return between 1 and 5 short tags (1-3 words each) that describe the topic areas.
+- Tags should be from common civic interest areas such as: Healthcare, Education, Taxes, Housing,
+  Immigration, Public Safety, Climate, Economy, Labor, Veterans, Transportation, Technology,
+  National Security, Judiciary, Energy, Agriculture, Civil Rights, Voting Rights, Gun Policy,
+  Foreign Affairs, Social Security, Reproductive Rights, Student Debt, Infrastructure, Trade, etc.
+- You may create a tag not in the above list if none fit well.
+- Return only the tags list, no explanations.
+""".strip()
+
+    try:
+        result = await call_llm_structured(SYSTEM_CIVIC_GROUNDED, prompt, TagsOutput)
+        return result.tags[:5]
+    except Exception:
+        return []
     if web_failed and web_error:
         fallback.uncertainties = _dedupe_strings(
             [

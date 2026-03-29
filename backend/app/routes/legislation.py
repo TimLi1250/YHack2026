@@ -10,7 +10,10 @@ from app.services.legislation_service import (
     get_legislation_by_id,
     summarize_legislation_by_id,
 )
+from app.services.llm_service import generate_tags
 from app.services.source_service import get_sources_for_entity
+from app.storage import load_json, save_json
+from app.config import LEGISLATION_FILE
 
 router = APIRouter(prefix="/legislation", tags=["legislation"])
 
@@ -73,3 +76,25 @@ async def summarize_bill(
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result
+
+
+@router.get("/{bill_id}/tags")
+async def bill_tags(bill_id: str) -> dict[str, Any]:
+    """Generate or return cached interest tags for a bill."""
+    legislation = load_json(LEGISLATION_FILE)
+    bill = None
+    bill_idx = -1
+    for i, l in enumerate(legislation):
+        if l.get("id") == bill_id:
+            bill = l
+            bill_idx = i
+            break
+    if bill is None:
+        raise HTTPException(status_code=404, detail="Legislation not found")
+    if bill.get("tags"):
+        return {"id": bill_id, "tags": bill["tags"]}
+    tags = await generate_tags(bill.get("title", ""), bill.get("plain_summary"))
+    bill["tags"] = tags
+    legislation[bill_idx] = bill
+    save_json(LEGISLATION_FILE, legislation)
+    return {"id": bill_id, "tags": tags}

@@ -92,6 +92,7 @@ export interface LegislationRecord {
   uncertainties?: string[];
   sources?: { label: string; url: string }[];
   source_url?: string | null;
+  tags?: string[];
   created_at?: string;
 }
 
@@ -108,6 +109,7 @@ export interface MeetingRecord {
   effects_on_groups?: { group: string; effect: string }[];
   uncertainties?: string[];
   sources?: { label: string; url: string }[];
+  tags?: string[];
   created_at?: string;
 }
 
@@ -273,6 +275,8 @@ export const legislation = {
     request<LegislationRecord>(`/legislation/${id}/summary${userId ? `?user_id=${userId}` : ""}`),
   sources: (id: string) =>
     request<{ label: string; url: string }[]>(`/legislation/${id}/sources`),
+  tags: (id: string) =>
+    request<{ id: string; tags: string[] }>(`/legislation/${id}/tags`),
 };
 
 // ─── Meetings ────────────────────────────────────────────────────────
@@ -283,6 +287,8 @@ export const meetings = {
   get: (id: string) => request<MeetingRecord>(`/meetings/${id}`),
   summary: (id: string, userId?: string) =>
     request<MeetingRecord>(`/meetings/${id}/summary${userId ? `?user_id=${userId}` : ""}`),
+  tags: (id: string) =>
+    request<{ id: string; tags: string[] }>(`/meetings/${id}/tags`),
 };
 
 // ─── Elections ──────────────────────────────────────────────────────

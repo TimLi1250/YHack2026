@@ -7,6 +7,7 @@ type ProfilePageProps = {
   onOpenProfile: () => void;
   onOpenExplore: () => void;
   onOpenBallot: () => void;
+  onOpenCongress: () => void;
   onOpenHome: () => void;
 };
 
@@ -93,6 +94,7 @@ export default function ProfilePage({
   onOpenProfile,
   onOpenExplore,
   onOpenBallot,
+  onOpenCongress,
   onOpenHome,
 }: ProfilePageProps) {
   const [interestDraft, setInterestDraft] = useState("");
@@ -564,6 +566,14 @@ export default function ProfilePage({
           >
             <span className="text-xl sm:text-2xl">☑</span>
             <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Ballot</span>
+          </button>
+          <button
+            type="button"
+            onClick={onOpenCongress}
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
+          >
+            <span className="text-xl sm:text-2xl">⚖</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Congress</span>
           </button>
           <button
             type="button"
