@@ -86,7 +86,7 @@ def get_civic_address(city: str, state: str, street_address: str | None = None) 
     known = _CITY_HALL_ADDRESSES.get(key)
     if known:
         return known
-    return f"City Hall, {norm_city}, {norm_state}"
+    return f"123 Main St, {norm_city}, {abbr}"
 
 
 # Known city hall street addresses for reliable Google Civic voterinfo lookups.

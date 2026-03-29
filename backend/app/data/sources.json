@@ -1,0 +1,222 @@
+[
+  {
+    "id": "src_7394b443167f",
+    "entity_type": "meeting",
+    "entity_id": "meeting_231d2145e9be",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/house/62653",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.019048+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_7e26eabe44c9",
+    "entity_type": "meeting",
+    "entity_id": "meeting_84b84ce4a9a4",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/house/62611",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.020624+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_71adc085a574",
+    "entity_type": "meeting",
+    "entity_id": "meeting_26cde5fc6230",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/house/62790",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.030533+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_3bbefb5e1294",
+    "entity_type": "meeting",
+    "entity_id": "meeting_741d5a1497c3",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/house/58472",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.039040+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_4a5eeeb8cd9b",
+    "entity_type": "meeting",
+    "entity_id": "meeting_32263e308f51",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/senate/63040",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.047394+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_2fc823773f06",
+    "entity_type": "meeting",
+    "entity_id": "meeting_20dc58b37113",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/senate/1",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.056956+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_66aba070209e",
+    "entity_type": "meeting",
+    "entity_id": "meeting_a21d5ecf93b5",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/senate/63038",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.066444+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_b05bf7617033",
+    "entity_type": "meeting",
+    "entity_id": "meeting_6eee86116dd6",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/senate/61244",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.076261+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_c759cdf77111",
+    "entity_type": "meeting",
+    "entity_id": "meeting_daa9c965d4da",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/house/61905",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.086005+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_4a97cc77544b",
+    "entity_type": "meeting",
+    "entity_id": "meeting_203ba5f9752b",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/hearing/119/senate/62654",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.097195+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_8984e9b0d3a2",
+    "entity_type": "legislation",
+    "entity_id": "leg_aec9075629b0",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/144?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.160327+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_f23914bfb5c3",
+    "entity_type": "legislation",
+    "entity_id": "leg_4f0db22a9094",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/134?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.181191+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_e4b9b8abb248",
+    "entity_type": "legislation",
+    "entity_id": "leg_1e3fa5c7c204",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/173?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.192359+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_fb96f72a0bd6",
+    "entity_type": "legislation",
+    "entity_id": "leg_afe8af9c92b3",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/209?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.204184+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_409cde571d55",
+    "entity_type": "legislation",
+    "entity_id": "leg_925bda46309c",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hjres/1?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.216683+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_f74f25a6813b",
+    "entity_type": "legislation",
+    "entity_id": "leg_c987479b1c8e",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/68?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.230450+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_b8cb9ac91a90",
+    "entity_type": "legislation",
+    "entity_id": "leg_4b141b28b841",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/187?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.244527+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_46fc4d40e88c",
+    "entity_type": "legislation",
+    "entity_id": "leg_d7e1af677bc1",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/166?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.257883+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_3801094deeec",
+    "entity_type": "legislation",
+    "entity_id": "leg_a0074a82c7e6",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/22?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.270104+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_15b1be7cbdc4",
+    "entity_type": "legislation",
+    "entity_id": "leg_3c6e6b1033ab",
+    "label": "Congress.gov",
+    "url": "https://api.congress.gov/v3/bill/119/hr/28?format=json",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T00:39:46.282631+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_6baefd68d8fe",
+    "entity_type": "ballot",
+    "entity_id": "ballot_7ccb68e83da2",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T03:22:51.274280+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_bafa7edfa4ec",
+    "entity_type": "ballot",
+    "entity_id": "ballot_d36cd76cb28e",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T09:24:53.094625+00:00",
+    "trust_tier": "unverified"
+  }
+]
