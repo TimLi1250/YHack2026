@@ -298,32 +298,6 @@ export default function ExplorePage({
                 </button>
               </div>
 
-              <div className="mb-4 mt-6">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Here are some things you can do
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-slate-50 px-4 py-4">
-                <p className="text-sm font-semibold text-slate-900">Use one panel for both modes</p>
-                <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Ask general ballot questions, explain measures in plain language, or switch to fact-checking for specific civic claims.
-                </p>
-              </div>
-
-              <div className="mt-4 rounded-xl border border-slate-200 bg-white px-4 py-4 transition-all focus-within:border-slate-900 focus-within:ring-4 focus-within:ring-slate-900/5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAssistantMode("chat");
-                    setPanelMode("chat");
-                  }}
-                  className="w-full text-left text-sm text-slate-400"
-                >
-                  Ask me anything about the ballot...
-                </button>
-              </div>
-
               <div className="mt-4">
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                   Chat starters

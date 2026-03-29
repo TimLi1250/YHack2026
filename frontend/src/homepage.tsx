@@ -536,16 +536,13 @@ export default function VotingAssistantHomepage({
       style={{ fontFamily: "Roboto, sans-serif" }}
     >
       <div className="mx-auto flex min-h-screen max-w-md flex-col bg-[#FBFBFA] shadow-2xl">
-        <div className="px-6 pb-8 pt-8">
-          <div className="mb-4 flex items-center justify-between">
+        <div className="px-6 pb-4 pt-8">
+          <div className="mb-3">
             <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-600">
               Civic Dashboard
             </span>
-            <div className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
-              Nonpartisan
-            </div>
           </div>
-          <div className="mb-6">
+          <div className="mb-4">
             <div>
               <p className="text-sm font-medium text-slate-400">Civic access for everyone</p>
               <h1 className="mt-2 text-4xl font-black tracking-tight" style={headingFontStyle}>
@@ -567,69 +564,7 @@ export default function VotingAssistantHomepage({
           {/* ════════════ HOME TAB ════════════ */}
           {activeTab === "home" && (
             <>
-              {/* Election check-in card */}
               <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Your election check-in</p>
-                    <h3 className="mt-2 text-xl font-bold text-slate-900" style={headingFontStyle}>Stay ready for the next election</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-500">
-                      {hasLocation
-                        ? "Track important dates, upcoming reminders, and what to do next."
-                        : "Set your city and state in your profile to see upcoming dates."}
-                    </p>
-                  </div>
-                  {notificationsList !== null && (
-                    <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                      {notificationsList.length} upcoming
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  {!hasLocation ? (
-                    <PlaceholderCard icon="📍" title="Location needed" subtitle="Add your city and state in Profile to see elections and deadlines." />
-                  ) : notificationsList === null ? (
-                    <Skeleton lines={3} />
-                  ) : notificationsList.length === 0 ? (
-                    <PlaceholderCard icon="🔔" title="No reminders yet" subtitle="Tap &quot;Check deadlines&quot; to generate reminders." />
-                  ) : (
-                    notificationsList.slice(0, 5).map((n) => (
-                      <div key={n.id} className="flex items-start justify-between gap-4 rounded-[1.5rem] bg-slate-50 px-4 py-3">
-                        <div>
-                          <p className="text-sm font-semibold text-slate-900">{formatNotifType(n.notification_type)}</p>
-                          <p className="mt-1 text-sm text-slate-600">{n.message}</p>
-                        </div>
-                        {n.scheduled_for && (
-                          <div className="shrink-0 rounded-full bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm">
-                            {formatDate(n.scheduled_for)}
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                {hasLocation && (
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <button onClick={handleCheckDeadlines} className="rounded-[1.5rem] bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                      Check deadlines
-                    </button>
-                    <button onClick={onOpenBallot} className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-                      View ballot
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Quick stats */}
-              <div className="mt-6 grid grid-cols-3 gap-3">
-                <QuickStat label="Ballot items" value={ballotItems === null ? "—" : String(ballotItems.length)} loading={ballotItems === null && hasLocation} />
-                <QuickStat label="Candidates" value={candidatesList === null ? "—" : String(candidatesList.length)} loading={candidatesList === null && hasLocation} />
-                <QuickStat label="Bills tracked" value={legislationList === null ? "—" : String(legislationList.length)} loading={legislationList === null} />
-              </div>
-
-              <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Next election date</p>
@@ -680,7 +615,7 @@ export default function VotingAssistantHomepage({
               </div>
 
               {/* Current month election calendar */}
-              <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+              <div className="mt-5 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Upcoming elections in 2026</p>
                   {electionsList !== null && (

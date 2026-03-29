@@ -330,58 +330,76 @@ export default function CongressPage({
   const filteredHearings = chamberFilter === "all" ? hearings : hearings.filter((h) => h.chamber === chamberFilter);
 
   return (
-    <div className="flex min-h-screen w-full items-start justify-center bg-[#F8F8FA]">
-      <div className="relative flex w-full max-w-md flex-col min-h-screen bg-white shadow-xl">
-        {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/95 backdrop-blur px-5 pt-10 pb-4">
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900" style={headingFontStyle}>
-            Congress
-          </h1>
-          <p className="mt-0.5 text-sm text-slate-500">Bills & hearings from Congress.gov</p>
-
-          {/* Tabs */}
-          <div className="mt-4 flex gap-2">
+    <div
+      className="min-h-screen bg-[#FBFBFA] text-[#0F172A] selection:bg-slate-200"
+      style={{ fontFamily: "Roboto, sans-serif" }}
+    >
+      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-[#FBFBFA] shadow-2xl">
+        <main className="flex-1 px-6 pb-28 pt-8">
+          <div className="mb-6 flex justify-end">
             <button
               type="button"
-              onClick={() => setTab("bills")}
-              className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition ${
-                tab === "bills" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-              }`}
+              onClick={onOpenHome}
+              className="group flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-slate-900"
             >
-              Bills
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab("hearings")}
-              className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition ${
-                tab === "hearings" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-              }`}
-            >
-              Hearings
+              <span className="text-base transition-transform group-hover:-translate-x-1">←</span>
+              <span>Back</span>
             </button>
           </div>
 
-          {/* Chamber filter */}
-          <div className="mt-3 flex gap-2">
-            {(["all", "House", "Senate"] as const).map((c) => (
+          <div className="mb-8">
+            <span className="mb-4 inline-block rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-600">
+              Congress Tracker
+            </span>
+            <h1 className="text-4xl font-black tracking-tight text-slate-900" style={headingFontStyle}>
+              Congress
+            </h1>
+            <p className="mt-4 max-w-[28rem] text-base leading-relaxed text-slate-500">
+              Follow bills and hearings from Congress.gov in the same simple, readable format as the rest of the app.
+            </p>
+          </div>
+
+          <section className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="flex flex-wrap gap-2">
               <button
-                key={c}
                 type="button"
-                onClick={() => setChamberFilter(c)}
-                className={`rounded-full px-3 py-1 text-[11px] font-semibold transition ${
-                  chamberFilter === c
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                onClick={() => setTab("bills")}
+                className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition ${
+                  tab === "bills" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                 }`}
               >
-                {c === "all" ? "All" : c}
+                Bills
               </button>
-            ))}
-          </div>
-        </header>
+              <button
+                type="button"
+                onClick={() => setTab("hearings")}
+                className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition ${
+                  tab === "hearings" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                }`}
+              >
+                Hearings
+              </button>
+            </div>
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto px-5 py-6 pb-28 space-y-4">
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(["all", "House", "Senate"] as const).map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setChamberFilter(c)}
+                  className={`rounded-full px-3 py-1 text-[11px] font-semibold transition ${
+                    chamberFilter === c
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                  }`}
+                >
+                  {c === "all" ? "All" : c}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <div className="mt-6 space-y-4">
           {tab === "bills" && (
             <>
               {loadingBills && <p className="text-sm text-slate-400 animate-pulse">Loading bills…</p>}
@@ -405,6 +423,7 @@ export default function CongressPage({
               ))}
             </>
           )}
+          </div>
         </main>
 
         {/* Nav bar */}

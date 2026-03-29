@@ -555,7 +555,7 @@ export default function BallotPage({
                             href={regUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-slate-700"
+                            className="mt-3 inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-2 text-[11px] font-bold text-white transition hover:bg-slate-700"
                           >
                             Register / verify / absentee in {profile.state}
                             <span aria-hidden>↗</span>
@@ -564,7 +564,7 @@ export default function BallotPage({
                       );
                     })()}
                   </div>
-                  <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700 shrink-0">
+                  <div className="rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-700 shrink-0">
                     Check
                   </div>
                 </div>
@@ -577,7 +577,7 @@ export default function BallotPage({
                     <p className="text-sm font-semibold text-slate-900">Polling place plan</p>
                     <p className="mt-1 text-sm text-slate-600">Pick a preferred location before Election Day so you have a backup option.</p>
                   </div>
-                  <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700 shrink-0">
+                  <div className="rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-700 shrink-0">
                     Review
                   </div>
                 </div>
@@ -590,7 +590,7 @@ export default function BallotPage({
                     <p className="text-sm font-semibold text-slate-900">ID and ballot request</p>
                     <p className="mt-1 text-sm text-slate-600">Check whether your state needs ID or a mail ballot application.</p>
                   </div>
-                  <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700 shrink-0">
+                  <div className="rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-700 shrink-0">
                     Next step
                   </div>
                 </div>
@@ -658,7 +658,7 @@ export default function BallotPage({
                           <p className="mt-1 text-xs text-slate-400 italic">{loc.notes}</p>
                         )}
                       </div>
-                      <span className="shrink-0 rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                      <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-500">
                         {loc.kind === "drop_off" ? "Drop-off" : loc.kind === "early_vote" ? "Early vote" : "Polls"}
                       </span>
                     </div>
@@ -678,42 +678,42 @@ export default function BallotPage({
           <button
             type="button"
             onClick={onOpenHome}
-            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
+            className="flex flex-col items-center gap-1 px-3 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
             <span className="text-xl sm:text-2xl">⌂</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Home</span>
+            <span className="text-[8px] font-bold uppercase tracking-[0.12em]">Home</span>
           </button>
           <button
             type="button"
             onClick={onOpenExplore}
-            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
+            className="flex flex-col items-center gap-1 px-3 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
             <span className="text-xl sm:text-2xl">⌕</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Explore</span>
+            <span className="text-[8px] font-bold uppercase tracking-[0.12em]">Explore</span>
           </button>
           <button
             type="button"
             onClick={onOpenBallot}
-            className="flex flex-col items-center gap-1 px-4 py-2 text-[#0F172A]"
+            className="flex flex-col items-center gap-1 px-3 py-2 text-[#0F172A]"
           >
             <span className="text-xl sm:text-2xl">☑</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Ballot</span>
+            <span className="text-[8px] font-bold uppercase tracking-[0.12em]">Ballot</span>
           </button>
           <button
             type="button"
             onClick={onOpenCongress}
-            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
+            className="flex flex-col items-center gap-1 px-2 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
             <span className="text-xl sm:text-2xl">⚖</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Congress</span>
+            <span className="text-[8px] font-bold uppercase tracking-[0.08em]">Congress</span>
           </button>
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
+            className="flex flex-col items-center gap-1 px-3 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
             <span className="text-xl sm:text-2xl">◉</span>
-            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Profile</span>
+            <span className="text-[8px] font-bold uppercase tracking-[0.12em]">Profile</span>
           </button>
         </div>
           </nav>
