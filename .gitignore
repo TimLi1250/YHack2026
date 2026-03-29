@@ -2,3 +2,6 @@ frontend/node_modules
 backend/.env
 frontend/dist
 .vscode
+backend/__pycache__
+backend/app/routes/__pycache__
+backend/app/services/__pycache__

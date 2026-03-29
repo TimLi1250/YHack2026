@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useEffect, useState, useCallback, type ChangeEvent, type FormEvent } from "react";
 import {
   users,
@@ -38,40 +37,17 @@ const interestOptions = [
 const defaultFormState = {
   name: "", age_range: "", ethnicity: "", interests: [] as string[],
   salary_range: "", gender: "", state: "", city: "", street_address: "", language_preference: "en",
-=======
+};
+type Tab = "home" | "explore" | "ballot" | "profile";
+type FormState = typeof defaultFormState;
+
 type VotingAssistantHomepageProps = {
   onOpenProfile: () => void;
   onOpenExplore: () => void;
   onOpenBallot: () => void;
   onOpenHome: () => void;
->>>>>>> f1ce8fbf95af7cc39b29b06e98fd358bc5465b9d
 };
 
-export default function VotingAssistantHomepage({
-  onOpenProfile,
-  onOpenExplore,
-  onOpenBallot,
-  onOpenHome,
-}: VotingAssistantHomepageProps) {
-  const features = [
-    {
-      title: "Explain My Ballot",
-      desc: "Get plain-language summaries of races and ballot measures.",
-      icon: "🗳️",
-    },
-    {
-      title: "Voting Info Near Me",
-      desc: "Find registration help, deadlines, polling places, and ID requirements.",
-      icon: "📍",
-    },
-    {
-      title: "Community Impact",
-      desc: "See how an issue could affect students, renters, families, and seniors.",
-      icon: "🌍",
-    },
-  ];
-
-<<<<<<< HEAD
 function Skeleton({ lines = 3 }: { lines?: number }) {
   return (
     <div className="animate-pulse space-y-2">
@@ -156,7 +132,12 @@ function formatDate(iso: string) {
 /*                        MAIN COMPONENT                              */
 /* ═══════════════════════════════════════════════════════════════════ */
 
-export default function VotingAssistantHomepage() {
+export default function VotingAssistantHomepage({
+  onOpenProfile,
+  onOpenExplore,
+  onOpenBallot,
+  onOpenHome,
+}: VotingAssistantHomepageProps) {
   /* ── UI state ─────────────────────────────────────────────────────── */
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [user, setUser] = useState<UserRecord | null>(null);
@@ -179,6 +160,12 @@ export default function VotingAssistantHomepage() {
   const [selectedMeeting, setSelectedMeeting] = useState<MeetingRecord | null>(null);
 
   const hasLocation = !!(user?.state && user?.city);
+
+  const features = [
+    { title: "Explain My Ballot", desc: "Get plain-language summaries of races and ballot measures.", icon: "🗳️" },
+    { title: "Voting Info Near Me", desc: "Find registration help, deadlines, polling places, and ID requirements.", icon: "📍" },
+    { title: "Community Impact", desc: "See how an issue could affect students, renters, families, and seniors.", icon: "🌍" },
+  ];
 
   /* ── load user on mount ───────────────────────────────────────────── */
 
@@ -350,25 +337,6 @@ export default function VotingAssistantHomepage() {
   /* ═════════════════════════════════════════════════════════════════ */
   /*                            RENDER                                */
   /* ═════════════════════════════════════════════════════════════════ */
-=======
-  const upcomingItems = [
-    {
-      label: "Registration deadline",
-      date: "Oct 7",
-      detail: "Check your status before the deadline.",
-    },
-    {
-      label: "Early voting begins",
-      date: "Oct 21",
-      detail: "Plan where and when you want to vote.",
-    },
-    {
-      label: "Election Day",
-      date: "Nov 5",
-      detail: "Polling places open from 6 AM to 9 PM.",
-    },
-  ];
->>>>>>> f1ce8fbf95af7cc39b29b06e98fd358bc5465b9d
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -409,7 +377,6 @@ export default function VotingAssistantHomepage() {
           </div>
         </div>
 
-<<<<<<< HEAD
         {/* ── MAIN CONTENT ────────────────────────────────────────── */}
         <div className="-mt-4 px-6 pb-24">
 
@@ -518,28 +485,13 @@ export default function VotingAssistantHomepage() {
                 <h4 className="mt-1 text-lg font-semibold text-slate-900">Explore what matters to your community</h4>
                 <p className="mt-2 text-sm leading-6 text-slate-700">
                   View ballot measures through lenses like students, renters, families, and public transit users.
-=======
-        <div className="-mt-4 px-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-lg">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Your election check-in
-                </p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-900">
-                  Stay ready for the next election
-                </h3>
-                <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Track important dates, upcoming reminders, and what to do next before voting.
->>>>>>> f1ce8fbf95af7cc39b29b06e98fd358bc5465b9d
                 </p>
               </div>
-              <div className="rounded-2xl bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 ring-1 ring-amber-100">
-                3 upcoming
-              </div>
-            </div>
+            </>
+          )}
 
-<<<<<<< HEAD
+          {activeTab === "profile" && (
+            <div className="pt-6">
               {statusMessage && (
                 <div className="mb-4 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-700">{statusMessage}</div>
               )}
@@ -614,34 +566,14 @@ export default function VotingAssistantHomepage() {
                         </button>
                       );
                     })}
-=======
-            <div className="mt-4 space-y-3">
-              {upcomingItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-start justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.label}</p>
-                    <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
-                  </div>
-                  <div className="rounded-2xl bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm">
-                    {item.date}
->>>>>>> f1ce8fbf95af7cc39b29b06e98fd358bc5465b9d
                   </div>
                 </div>
-              ))}
+                <button type="submit" disabled={saving} className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50">
+                  {saving ? "Saving…" : "Save profile"}
+                </button>
+              </form>
             </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <button className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.01]">
-                Set reminders
-              </button>
-              <button className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
-                View full timeline
-              </button>
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="px-6 pb-24 pt-6">

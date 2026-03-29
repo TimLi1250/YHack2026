@@ -16,5 +16,59 @@
       }
     ],
     "created_at": "2026-03-29T03:22:51.274199+00:00"
+  },
+  {
+    "id": "ballot_0d5f4ffe4e8e",
+    "election_id": "election_11201",
+    "title": "Proposed Constitutional Amendment",
+    "ballot_text": "Question: Should the Constitution of Virginia be amended to allow the General Assembly to temporarily adopt new congressional districts to restore fairness in the upcoming elections, while ensuring Virginia's standard redistricting process resumes for all future redistricting after the 2030 census?",
+    "normalized_type": "proposition",
+    "election_type": "special",
+    "election_level": "statewide",
+    "office_name": null,
+    "district_name": "Virginia",
+    "sources": [
+      {
+        "label": "Google Civic Info API",
+        "url": "https://www.googleapis.com/civicinfo/v2/voterinfo"
+      }
+    ],
+    "created_at": "2026-03-29T04:13:27.733302+00:00"
+  },
+  {
+    "id": "ballot_96a278ebf85f",
+    "election_id": "election_11201",
+    "title": "Proposed Constitutional Amendment",
+    "ballot_text": "Question: Should the Constitution of Virginia be amended to allow the General Assembly to temporarily adopt new congressional districts to restore fairness in the upcoming elections, while ensuring Virginia's standard redistricting process resumes for all future redistricting after the 2030 census?",
+    "normalized_type": "proposition",
+    "election_type": "special",
+    "election_level": "statewide",
+    "office_name": null,
+    "district_name": "Virginia",
+    "sources": [
+      {
+        "label": "Google Civic Info API",
+        "url": "https://www.googleapis.com/civicinfo/v2/voterinfo"
+      }
+    ],
+    "created_at": "2026-03-29T04:13:29.250623+00:00"
+  },
+  {
+    "id": "ballot_4813af6350a1",
+    "election_id": "election_11201",
+    "title": "Proposed Constitutional Amendment",
+    "ballot_text": "Question: Should the Constitution of Virginia be amended to allow the General Assembly to temporarily adopt new congressional districts to restore fairness in the upcoming elections, while ensuring Virginia's standard redistricting process resumes for all future redistricting after the 2030 census?",
+    "normalized_type": "proposition",
+    "election_type": "special",
+    "election_level": "statewide",
+    "office_name": null,
+    "district_name": "Virginia",
+    "sources": [
+      {
+        "label": "Google Civic Info API",
+        "url": "https://www.googleapis.com/civicinfo/v2/voterinfo"
+      }
+    ],
+    "created_at": "2026-03-29T04:13:30.266803+00:00"
   }
 ]
