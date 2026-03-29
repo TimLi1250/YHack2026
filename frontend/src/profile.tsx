@@ -66,17 +66,15 @@ const interestOptions = [
   "Student Debt",
 ];
 
+const headingFontStyle = {
+  fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+};
+
 function parseInterests(value: string) {
   return value
     .split(/[,;\n]+/)
     .map((item) => item.trim())
     .filter(Boolean);
-}
-
-function navClass(isActive: boolean) {
-  return isActive
-    ? "text-[#0F172A]"
-    : "text-slate-400 transition-colors hover:text-slate-600";
 }
 
 export default function ProfilePage({
@@ -130,7 +128,10 @@ export default function ProfilePage({
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA] text-[#0F172A] selection:bg-slate-200">
+    <div
+      className="min-h-screen bg-[#FBFBFA] text-[#0F172A] selection:bg-slate-200"
+      style={{ fontFamily: "Roboto, sans-serif" }}
+    >
       <div className="mx-auto flex min-h-screen max-w-md flex-col bg-[#FBFBFA] shadow-2xl">
         <main className="px-6 pb-24 pt-8">
         <div className="mb-6 flex justify-end">
@@ -148,12 +149,11 @@ export default function ProfilePage({
           <span className="mb-4 inline-block rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-600">
             Voter Setup
           </span>
-          <h1 className="text-4xl font-black tracking-tight">
+          <h1 className="text-4xl font-black tracking-tight" style={headingFontStyle}>
             Build your voter profile.
           </h1>
           <p className="mt-4 max-w-[28rem] text-base leading-relaxed text-slate-500">
-            Tailor your ballot information by sharing your priorities. This helps us highlight
-            candidates that align with your values without changing the backend profile schema.
+            Tailor your ballot information by sharing your priorities.
           </p>
         </div>
 
@@ -164,7 +164,9 @@ export default function ProfilePage({
                 ☺︎
               </div>
               <div>
-                <h2 className="text-lg font-bold">Demographics</h2>
+                <h2 className="text-lg font-bold" style={headingFontStyle}>
+                  Demographics
+                </h2>
                 <p className="text-xs text-slate-400">General information about you</p>
               </div>
             </div>
@@ -270,7 +272,9 @@ export default function ProfilePage({
                 ⌖
               </div>
               <div>
-                <h2 className="text-lg font-bold">Location</h2>
+                <h2 className="text-lg font-bold" style={headingFontStyle}>
+                  Location
+                </h2>
                 <p className="text-xs text-slate-400">Where you'll be voting</p>
               </div>
             </div>
@@ -310,7 +314,9 @@ export default function ProfilePage({
                 ♡
               </div>
               <div>
-                <h2 className="text-lg font-bold">Interests & Priorities</h2>
+                <h2 className="text-lg font-bold" style={headingFontStyle}>
+                  Interests & Priorities
+                </h2>
                 <p className="text-xs text-slate-400">Issues that matter most to you</p>
               </div>
             </div>
@@ -410,7 +416,7 @@ export default function ProfilePage({
           <button
             type="button"
             onClick={onOpenHome}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(false)}`}
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
             <span className="text-xl sm:text-2xl">⌂</span>
             <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Home</span>
@@ -418,7 +424,7 @@ export default function ProfilePage({
           <button
             type="button"
             onClick={onOpenExplore}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(false)}`}
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
             <span className="text-xl sm:text-2xl">⌕</span>
             <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Explore</span>
@@ -426,7 +432,7 @@ export default function ProfilePage({
           <button
             type="button"
             onClick={onOpenBallot}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(false)}`}
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
             <span className="text-xl sm:text-2xl">☑</span>
             <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Ballot</span>
@@ -434,7 +440,7 @@ export default function ProfilePage({
           <button
             type="button"
             onClick={onOpenProfile}
-            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(true)}`}
+            className="flex flex-col items-center gap-1 px-4 py-2 text-[#0F172A]"
           >
             <span className="text-xl sm:text-2xl">◉</span>
             <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Profile</span>
