@@ -76,11 +76,12 @@ Return only valid JSON that matches the requested schema.
 
 SYSTEM_CIVIC_FACTCHECK_WEB = """
 You are a neutral civic fact-checking assistant.
-First prefer the provided civic records and source packet when they directly establish the claim.
-If they do not, use Google Search grounding from this model call to find reputable public web sources.
+Use Google Search grounding from this model call first to find reputable public web sources.
+Then use the provided civic records and source packet as local corroboration when they are relevant.
 Never recommend how to vote. Never persuade. Never invent facts.
-For web-grounded answers, mention sources directly in the summary using phrasing like "From <source>: ...".
-Return only valid JSON that matches the requested schema.
+Give a brief plain-language answer, not JSON.
+Keep the answer to 1-3 short sentences.
+Mention one concrete source directly using phrasing like "From <source>: ...".
 """.strip()
 
 
@@ -124,6 +125,150 @@ def _dedupe_strings(items: list[str]) -> list[str]:
         seen.add(normalized)
         result.append(normalized)
     return result
+
+
+def _format_exception_message(exc: Exception) -> str:
+    message = str(exc).strip()
+    if not message:
+        return exc.__class__.__name__
+    return f"{exc.__class__.__name__}: {message}"
+
+
+def _infer_fact_check_verdict_from_text(text: str) -> str:
+    lowered = text.strip().lower()
+    contradicted_markers = (
+        "was not",
+        "were not",
+        "did not",
+        "didn't",
+        "is false",
+        "are false",
+        "incorrect",
+        "not true",
+        "lost",
+        "was defeated",
+    )
+    supported_markers = (
+        "was elected",
+        "was reelected",
+        "won",
+        "defeated",
+        "is true",
+        "did win",
+        "did pass",
+        "does support",
+        "supports",
+    )
+    has_contradicted = any(marker in lowered for marker in contradicted_markers)
+    has_supported = any(marker in lowered for marker in supported_markers)
+    if has_contradicted and has_supported:
+        return "mixed"
+    if has_contradicted:
+        return "contradicted"
+    if has_supported:
+        return "supported"
+    return "not_enough_evidence"
+
+
+def _first_fact_check_finding(text: str) -> str:
+    cleaned = re.sub(r"\s+", " ", text.strip())
+    if not cleaned:
+        return ""
+    parts = re.split(r"(?<=[.!?])\s+", cleaned)
+    return (parts[0] if parts and parts[0] else cleaned)[:400]
+
+
+def _clean_web_fact_check_text(text: str) -> str:
+    cleaned = text.strip()
+    if not cleaned:
+        return ""
+
+    if cleaned.startswith("```"):
+        cleaned = "\n".join(
+            line for line in cleaned.splitlines() if not line.strip().startswith("```")
+        ).strip()
+
+    if cleaned.startswith("{") and cleaned.endswith("}"):
+        try:
+            payload = json.loads(cleaned)
+            if isinstance(payload, dict):
+                summary = str(payload.get("summary", "")).strip()
+                if summary:
+                    return summary
+        except Exception:
+            pass
+
+    summary_match = re.search(r'"summary"\s*:\s*"((?:\\.|[^"\\])*)"', cleaned, re.DOTALL)
+    if summary_match:
+        try:
+            return json.loads(f'"{summary_match.group(1)}"').strip()
+        except Exception:
+            pass
+
+    labeled_summary_match = re.search(
+        r"\*{0,2}summary:\*{0,2}\s*(.+)",
+        cleaned,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if labeled_summary_match:
+        cleaned = labeled_summary_match.group(1).strip()
+
+    cleaned = re.sub(
+        r"(^|\n)\s*\*{0,2}claim:\*{0,2}\s*.+?(?=\n|$)",
+        r"\1",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"(^|\n)\s*\*{0,2}verdict:\*{0,2}\s*.+?(?=\n|$)",
+        r"\1",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(r"^\s*\*{0,2}summary:\*{0,2}\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\*{0,2}(claim|verdict|summary):\*{0,2}\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\n{2,}", "\n", cleaned).strip()
+
+    return cleaned
+
+
+def _fallback_web_fact_check_response(
+    claim: str,
+    language: str,
+    web_text: str,
+    sources: list[SourceCitation],
+    reason: str | None = None,
+) -> AIFactCheckResponse:
+    primary_source = sources[0] if sources else None
+    cleaned_text = _clean_web_fact_check_text(web_text)
+    verdict = _infer_fact_check_verdict_from_text(cleaned_text)
+    summary = _first_fact_check_finding(cleaned_text) or "I could not extract a usable web-grounded fact-check answer."
+    if primary_source and not summary.lower().startswith("from "):
+        summary = f"From {primary_source.label}: {summary}"
+
+    evidence_for: list[FactCheckEvidence] = []
+    evidence_against: list[FactCheckEvidence] = []
+
+    uncertainties: list[str] = []
+    if verdict == "not_enough_evidence":
+        uncertainties.append("The web-grounded answer was inconclusive.")
+    if reason:
+        uncertainties.append(reason)
+
+    cited_source_ids = [primary_source.id] if primary_source else []
+    citations = [primary_source] if primary_source else []
+
+    return AIFactCheckResponse(
+        claim=claim.strip(),
+        verdict=verdict,
+        summary=summary,
+        evidence_for=evidence_for,
+        evidence_against=evidence_against,
+        cited_source_ids=cited_source_ids,
+        citations=citations,
+        uncertainties=_dedupe_strings(uncertainties),
+        language=language,
+    )
 
 
 def _source_map(sources: list[SourceCitation]) -> dict[str, SourceCitation]:
@@ -363,11 +508,10 @@ def _grounding_web_citations(response: Any) -> list[SourceCitation]:
     return citations
 
 
-async def call_llm_structured_with_google_search(
+async def call_llm_google_search_text(
     system_prompt: str,
     user_prompt: str,
-    response_model: type[T],
-) -> tuple[T, list[SourceCitation]]:
+) -> tuple[str, list[SourceCitation]]:
     if not GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY not configured")
     if not genai or not genai_types:
@@ -375,7 +519,7 @@ async def call_llm_structured_with_google_search(
 
     client = genai.Client(api_key=GEMINI_API_KEY)
 
-    def _run() -> tuple[T, list[SourceCitation]]:
+    def _run() -> tuple[str, list[SourceCitation]]:
         response = client.models.generate_content(
             model=GEMINI_MODEL,
             contents=user_prompt,
@@ -383,26 +527,14 @@ async def call_llm_structured_with_google_search(
                 systemInstruction=system_prompt,
                 temperature=LLM_TEMPERATURE,
                 maxOutputTokens=LLM_MAX_TOKENS,
-                responseMimeType="application/json",
-                responseSchema=response_model,
                 tools=[genai_types.Tool(googleSearch=genai_types.GoogleSearch())],
             ),
         )
-        parsed = getattr(response, "parsed", None)
-        if parsed is not None:
-            if isinstance(parsed, response_model):
-                result = parsed
-            else:
-                result = response_model.model_validate(parsed)
-        else:
-            text = getattr(response, "text", "") or ""
-            result = response_model.model_validate_json(text)
-        return result, _grounding_web_citations(response)
+        text = (getattr(response, "text", "") or "").strip()
+        return text, _grounding_web_citations(response)
 
     try:
         return await asyncio.to_thread(_run)
-    except ValidationError:
-        raise
     except Exception as exc:
         logger.exception("Google Search-grounded Gemini call failed: %s", exc)
         raise
@@ -858,7 +990,7 @@ async def web_grounded_fact_check(
 ) -> AIFactCheckResponse:
     language = _normalize_language(user_context.language_preference if user_context else None)
     prompt = f"""
-Task: fact-check a civic claim. Prefer the provided civic records first. If they are insufficient, use Google Search grounding from this model call.
+Task: fact-check a civic claim. Use Google Search grounding first, then use the provided civic records as local corroboration when relevant.
 
 Language for output: {language}
 
@@ -874,30 +1006,19 @@ Retrieved civic records:
 Source packet:
 {_format_sources(sources)}
 
-Return:
-- claim
-- verdict
-- summary
-- evidence_for
-- evidence_against
-- cited_source_ids
-- uncertainties
-- language
-
 Rules:
-- Check the local retrieved records first.
-- If the local packet is insufficient, use the web-grounded results from this model call.
-- Valid verdicts are: supported, contradicted, mixed, not_enough_evidence.
-- For local packet evidence, use the exact source id from the provided source packet.
-- For web-grounded evidence, source_id may be the exact source title or exact source URL shown by the web-grounded results.
-- In the summary, name the supporting or contradicting sources directly using phrasing like "From <source>: ...".
+- Check the web-grounded results from this model call first.
+- Then use the local retrieved records when they add relevant corroboration or local nuance.
+- Answer the claim directly in plain language, not JSON and not labeled fields.
+- Keep the answer to 1-3 short sentences.
+- If the claim is true or false, say that directly in the first sentence.
+- Mention one concrete source directly using phrasing like "From <source>: ...".
 - Never invent sources, quotes, dates, or vote recommendations.
 """.strip()
 
-    response, web_citations = await call_llm_structured_with_google_search(
+    web_text, web_citations = await call_llm_google_search_text(
         SYSTEM_CIVIC_FACTCHECK_WEB,
         prompt,
-        AIFactCheckResponse,
     )
 
     combined_sources = list(sources)
@@ -912,14 +1033,12 @@ Rules:
         existing_urls.add(normalized_url)
         existing_labels.add(normalized_label)
 
-    finalized = _finalize_fact_check_response(response, claim, language, combined_sources)
-    finalized.uncertainties = _dedupe_strings(
-        [
-            *finalized.uncertainties,
-            "The local source packet did not directly establish this claim, so a web-grounded Gemini fallback was used.",
-        ]
+    return _fallback_web_fact_check_response(
+        claim=claim,
+        language=language,
+        web_text=web_text,
+        sources=web_citations or combined_sources,
     )
-    return finalized
 
 
 async def grounded_fact_check(
@@ -965,22 +1084,75 @@ Rules:
 - Never invent sources, quotes, dates, or vote recommendations.
 """.strip()
 
-    try:
-        response = await call_llm_structured(SYSTEM_CIVIC_GROUNDED, prompt, AIFactCheckResponse)
-        finalized = _finalize_fact_check_response(response, claim, language, sources)
-        if finalized.verdict != "not_enough_evidence":
-            return finalized
-    except Exception:
-        finalized = None
+    web_result: AIFactCheckResponse | None = None
+    web_failed = False
+    web_error: str | None = None
 
     try:
-        return await web_grounded_fact_check(
+        web_result = await web_grounded_fact_check(
             claim=claim,
             user_context=user_context,
             source_packet=source_packet,
             sources=sources,
         )
+    except Exception as exc:
+        web_failed = True
+        web_error = _format_exception_message(exc)
+
+    local_result: AIFactCheckResponse | None = None
+    try:
+        response = await call_llm_structured(SYSTEM_CIVIC_GROUNDED, prompt, AIFactCheckResponse)
+        local_result = _finalize_fact_check_response(response, claim, language, sources)
     except Exception:
-        if finalized is not None:
-            return finalized
-        return _fallback_fact_check_response(claim, language, sources)
+        local_result = None
+
+    if web_result is not None:
+        if local_result is not None and local_result.citations:
+            merged_citations = _sanitize_citations(
+                [*web_result.citations, *local_result.citations],
+                [*web_result.citations, *local_result.citations],
+            )
+            merged_ids = _sanitize_source_ids(
+                [*web_result.cited_source_ids, *local_result.cited_source_ids],
+                merged_citations,
+            )
+            web_result = AIFactCheckResponse(
+                claim=web_result.claim,
+                verdict=web_result.verdict,
+                summary=web_result.summary,
+                evidence_for=web_result.evidence_for,
+                evidence_against=web_result.evidence_against,
+                cited_source_ids=merged_ids,
+                citations=merged_citations,
+                uncertainties=_dedupe_strings(
+                    [
+                        *web_result.uncertainties,
+                        *local_result.uncertainties,
+                    ]
+                ),
+                language=web_result.language,
+            )
+        return web_result
+
+    if local_result is not None:
+        if web_failed:
+            local_result.uncertainties = _dedupe_strings(
+                [
+                    *local_result.uncertainties,
+                    (
+                        "Gemini web-grounded fact-check could not be completed, "
+                        f"so this result falls back to the local source packet. {web_error}"
+                    ).strip(),
+                ]
+            )
+        return local_result
+
+    fallback = _fallback_fact_check_response(claim, language, sources)
+    if web_failed and web_error:
+        fallback.uncertainties = _dedupe_strings(
+            [
+                *fallback.uncertainties,
+                f"Gemini web-grounded fact-check failed: {web_error}",
+            ]
+        )
+    return fallback
