@@ -562,7 +562,7 @@ export default function BallotPage({
                           </a>
                         </>
                       );
-                    }()
+                    })()}
                   </div>
                   <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-700 shrink-0">
                     Check

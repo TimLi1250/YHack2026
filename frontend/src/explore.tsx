@@ -29,7 +29,7 @@ type ChatMessage = {
   evidence_against?: FactCheckEvidence[];
 };
 
-type PanelMode = "chat" | "voice" | null;
+type PanelMode = "chat" | null;
 type AssistantMode = "chat" | "fact-check";
 
 const starterPrompts = [
@@ -269,61 +269,47 @@ export default function ExplorePage({
                 </div>
               </div>
 
-              <div className="mb-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Here are some things you could do
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="rounded-2xl bg-slate-50 px-4 py-4">
-                  <p className="text-sm font-semibold text-slate-900">Understand measures quickly</p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAssistantMode("chat");
+                    setPanelMode("chat");
+                  }}
+                  className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition-all hover:border-slate-900 hover:ring-4 hover:ring-slate-900/5"
+                >
+                  <p className="text-sm font-semibold text-slate-900">Ask me anything</p>
                   <p className="mt-1 text-sm leading-6 text-slate-600">
-                    Ask for plain-language explanations, arguments, and likely impact.
+                    Open the assistant for ballot questions, deadlines, and local voting logistics.
                   </p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-4">
-                  <p className="text-sm font-semibold text-slate-900">Get voting logistics help</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">
-                    Ask about deadlines, ID rules, polling locations, and mail ballot steps.
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-4">
-                  <p className="text-sm font-semibold text-slate-900">Tie answers to your profile</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">
-                    Your city, state, and priorities help make responses more relevant.
-                  </p>
-                </div>
+                </button>
                 <button
                   type="button"
                   onClick={() => {
                     setAssistantMode("fact-check");
                     setPanelMode("chat");
                   }}
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition-all hover:border-slate-900 hover:ring-4 hover:ring-slate-900/5"
+                  className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left transition-all hover:border-slate-900 hover:ring-4 hover:ring-slate-900/5"
                 >
-                  <p className="text-sm font-semibold text-slate-900">Fact-check a claim</p>
+                  <p className="text-sm font-semibold text-slate-900">Fact-checking</p>
                   <p className="mt-1 text-sm leading-6 text-slate-600">
-                    Check whether a ballot or candidate claim is supported, contradicted, or still unverified.
+                    Verify a ballot, candidate, or voting claim with grounded sources.
                   </p>
                 </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setPanelMode("voice")}
-                className="mt-4 flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 text-left transition-all hover:border-slate-900 hover:ring-4 hover:ring-slate-900/5"
-              >
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                    Voice chat
-                  </p>
-                  <p className="mt-1 text-sm text-slate-700">
-                    Speak a ballot question and open the AI assistant in voice mode.
-                  </p>
-                </div>
-                <span className="text-xl text-slate-900">◉</span>
-              </button>
+              <div className="mb-4 mt-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Here are some things you can do
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 px-4 py-4">
+                <p className="text-sm font-semibold text-slate-900">Use one panel for both modes</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Ask general ballot questions, explain measures in plain language, or switch to fact-checking for specific civic claims.
+                </p>
+              </div>
 
               <div className="mt-4 rounded-xl border border-slate-200 bg-white px-4 py-4 transition-all focus-within:border-slate-900 focus-within:ring-4 focus-within:ring-slate-900/5">
                 <button
@@ -412,11 +398,7 @@ export default function ExplorePage({
                     AI Assistant
                   </p>
                   <h3 className="mt-1 text-lg font-bold text-slate-900" style={headingFontStyle}>
-                    {panelMode === "voice"
-                      ? "Voice mode"
-                      : assistantMode === "fact-check"
-                        ? "Fact-check a claim"
-                        : "Ask me anything"}
+                    {assistantMode === "fact-check" ? "Fact-check a claim" : "Ask me anything"}
                   </h3>
                 </div>
                 <button
@@ -428,156 +410,122 @@ export default function ExplorePage({
                 </button>
               </div>
 
-              {panelMode === "voice" ? (
-                <div className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
-                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-900 text-3xl text-white">
-                    ●
+              <>
+                <div className="border-b border-slate-100 px-5 py-3">
+                  <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
+                    <button
+                      type="button"
+                      onClick={() => setAssistantMode("chat")}
+                      className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                        assistantMode === "chat"
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-500 hover:text-slate-900"
+                      }`}
+                    >
+                      Ask me anything
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAssistantMode("fact-check")}
+                      className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                        assistantMode === "fact-check"
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-500 hover:text-slate-900"
+                      }`}
+                    >
+                      Fact-checking
+                    </button>
                   </div>
-                  <h4 className="mt-6 text-2xl font-bold text-slate-900" style={headingFontStyle}>
-                    Start speaking
-                  </h4>
-                  <p className="mt-3 max-w-xs text-sm leading-6 text-slate-500">
-                    Voice chat is a UI prototype for now. This is where live speech input and
-                    spoken AI responses would appear.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMessages((current) => [
-                        ...current,
-                        { role: "user", text: "Voice question placeholder", messageType: "chat" },
-                        {
-                          role: "assistant",
-                          text:
-                            "This is a placeholder response for voice mode. You can wire live speech here next.",
-                          messageType: "chat",
-                        },
-                      ]);
-                      setPanelMode("chat");
-                    }}
-                    className="mt-6 rounded-xl bg-[#0F172A] px-8 py-4 text-sm font-bold tracking-tight text-white shadow-lg shadow-slate-200 transition-all hover:bg-slate-800 active:scale-[0.98]"
-                  >
-                    Simulate voice question
-                  </button>
                 </div>
-              ) : (
-                <>
-                  <div className="border-b border-slate-100 px-5 py-3">
-                    <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
-                      <button
-                        type="button"
-                        onClick={() => setAssistantMode("chat")}
-                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                          assistantMode === "chat"
-                            ? "bg-white text-slate-900 shadow-sm"
-                            : "text-slate-500 hover:text-slate-900"
-                        }`}
-                      >
-                        Chat
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setAssistantMode("fact-check")}
-                        className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                          assistantMode === "fact-check"
-                            ? "bg-white text-slate-900 shadow-sm"
-                            : "text-slate-500 hover:text-slate-900"
-                        }`}
-                      >
-                        Fact check
-                      </button>
-                    </div>
-                  </div>
 
-                  <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
-                    {messages.map((message, index) => (
-                      <div
-                        key={`${message.role}-${index}`}
-                        className={`rounded-3xl px-4 py-4 text-sm leading-6 ${
-                          message.role === "assistant"
-                            ? "bg-slate-50 text-slate-700"
-                            : "ml-8 bg-[#0F172A] text-white"
-                        }`}
-                      >
-                        <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] opacity-70">
-                          {message.role === "assistant" ? "BallotBridge" : "You"}
-                        </p>
-                        {message.verdict ? (
-                          <div className="mb-3 flex flex-wrap items-center gap-2">
-                            <span
-                              className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${verdictStyles[message.verdict]}`}
-                            >
-                              {verdictLabels[message.verdict]}
-                            </span>
-                            {message.claim ? (
-                              <span className="text-xs text-slate-500">{message.claim}</span>
-                            ) : null}
-                          </div>
-                        ) : null}
-                        <p>{message.text}</p>
-                        {message.uncertainties?.length ? (
-                          <div className="mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-slate-500">
-                            {message.uncertainties.join(" ")}
-                          </div>
-                        ) : null}
-                        {message.citations?.length ? (
-                          <div className="mt-3">
-                            <a
-                              href={message.citations[0].url}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="block text-xs font-semibold text-blue-600 underline-offset-2 hover:underline"
-                            >
-                              {message.citations[0].label}
-                            </a>
-                          </div>
-                        ) : null}
-                      </div>
-                    ))}
-                    {isSending ? (
-                      <div className="rounded-3xl bg-slate-50 px-4 py-4 text-sm text-slate-500">
+                <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
+                  {messages.map((message, index) => (
+                    <div
+                      key={`${message.role}-${index}`}
+                      className={`rounded-3xl px-4 py-4 text-sm leading-6 ${
+                        message.role === "assistant"
+                          ? "bg-slate-50 text-slate-700"
+                          : "ml-8 bg-[#0F172A] text-white"
+                      }`}
+                    >
+                      <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] opacity-70">
+                        {message.role === "assistant" ? "BallotBridge" : "You"}
+                      </p>
+                      {message.verdict ? (
+                        <div className="mb-3 flex flex-wrap items-center gap-2">
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${verdictStyles[message.verdict]}`}
+                          >
+                            {verdictLabels[message.verdict]}
+                          </span>
+                          {message.claim ? (
+                            <span className="text-xs text-slate-500">{message.claim}</span>
+                          ) : null}
+                        </div>
+                      ) : null}
+                      <p>{message.text}</p>
+                      {message.uncertainties?.length ? (
+                        <div className="mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-slate-500">
+                          {message.uncertainties.join(" ")}
+                        </div>
+                      ) : null}
+                      {message.citations?.length ? (
+                        <div className="mt-3">
+                          <a
+                            href={message.citations[0].url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block text-xs font-semibold text-blue-600 underline-offset-2 hover:underline"
+                          >
+                            {message.citations[0].label}
+                          </a>
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                  {isSending ? (
+                    <div className="rounded-3xl bg-slate-50 px-4 py-4 text-sm text-slate-500">
+                      {assistantMode === "fact-check"
+                        ? "BallotBridge is checking web and local sources..."
+                        : "BallotBridge is thinking..."}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="border-t border-slate-100 p-4">
+                  <div className="rounded-xl border border-slate-200 bg-white px-4 py-4 transition-all focus-within:border-slate-900 focus-within:ring-4 focus-within:ring-slate-900/5">
+                    <textarea
+                      value={draft}
+                      onChange={(event) => setDraft(event.target.value)}
+                      placeholder={
+                        assistantMode === "fact-check"
+                          ? "Paste a ballot, candidate, or voting claim to verify..."
+                          : "Ask me anything about the ballot..."
+                      }
+                      className="min-h-20 w-full resize-none border-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-300"
+                    />
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <p className="text-xs text-slate-500">
                         {assistantMode === "fact-check"
-                          ? "BallotBridge is checking web and local sources..."
-                          : "BallotBridge is thinking..."}
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <div className="border-t border-slate-100 p-4">
-                    <div className="rounded-xl border border-slate-200 bg-white px-4 py-4 transition-all focus-within:border-slate-900 focus-within:ring-4 focus-within:ring-slate-900/5">
-                      <textarea
-                        value={draft}
-                        onChange={(event) => setDraft(event.target.value)}
-                        placeholder={
-                          assistantMode === "fact-check"
-                            ? "Paste a ballot, candidate, or voting claim to verify..."
-                            : "Ask me anything about the ballot..."
+                          ? "Try a specific claim so the verdict can stay grounded."
+                          : "Try races, measures, deadlines, or logistics."}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          void (assistantMode === "fact-check"
+                            ? sendFactCheck(draft)
+                            : sendMessage(draft))
                         }
-                        className="min-h-20 w-full resize-none border-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-300"
-                      />
-                      <div className="mt-3 flex items-center justify-between gap-3">
-                        <p className="text-xs text-slate-500">
-                          {assistantMode === "fact-check"
-                            ? "Try a specific claim so the verdict can stay grounded."
-                            : "Try races, measures, deadlines, or logistics."}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            void (assistantMode === "fact-check"
-                              ? sendFactCheck(draft)
-                              : sendMessage(draft))
-                          }
-                          disabled={isSending || !draft.trim()}
-                          className="rounded-xl bg-[#0F172A] px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
-                        >
-                          {isSending ? "Sending..." : assistantMode === "fact-check" ? "Check" : "Send"}
-                        </button>
-                      </div>
+                        disabled={isSending || !draft.trim()}
+                        className="rounded-xl bg-[#0F172A] px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+                      >
+                        {isSending ? "Sending..." : assistantMode === "fact-check" ? "Check" : "Send"}
+                      </button>
                     </div>
                   </div>
-                </>
-              )}
+                </div>
+              </>
             </div>
           </div>
         ) : null}

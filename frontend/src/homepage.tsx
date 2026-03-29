@@ -39,6 +39,60 @@ const headingFontStyle = {
   fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 };
 
+const STATE_NAME_BY_CODE: Record<string, string> = {
+  al: "alabama",
+  ak: "alaska",
+  az: "arizona",
+  ar: "arkansas",
+  ca: "california",
+  co: "colorado",
+  ct: "connecticut",
+  de: "delaware",
+  fl: "florida",
+  ga: "georgia",
+  hi: "hawaii",
+  id: "idaho",
+  il: "illinois",
+  in: "indiana",
+  ia: "iowa",
+  ks: "kansas",
+  ky: "kentucky",
+  la: "louisiana",
+  me: "maine",
+  md: "maryland",
+  ma: "massachusetts",
+  mi: "michigan",
+  mn: "minnesota",
+  ms: "mississippi",
+  mo: "missouri",
+  mt: "montana",
+  ne: "nebraska",
+  nv: "nevada",
+  nh: "new hampshire",
+  nj: "new jersey",
+  nm: "new mexico",
+  ny: "new york",
+  nc: "north carolina",
+  nd: "north dakota",
+  oh: "ohio",
+  ok: "oklahoma",
+  or: "oregon",
+  pa: "pennsylvania",
+  ri: "rhode island",
+  sc: "south carolina",
+  sd: "south dakota",
+  tn: "tennessee",
+  tx: "texas",
+  ut: "utah",
+  vt: "vermont",
+  va: "virginia",
+  wa: "washington",
+  wv: "west virginia",
+  wi: "wisconsin",
+  wy: "wyoming",
+  dc: "district of columbia",
+};
+
 /* ─── form types ───────────────────────────────────────────────────── */
 
 const defaultFormState = {
@@ -138,6 +192,53 @@ function formatDate(iso: string) {
   catch { return iso; }
 }
 
+function parseIsoDate(iso: string | null | undefined): Date | null {
+  if (!iso) return null;
+  const parsed = new Date(`${iso}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function normalizeStateToken(value: string | null | undefined): string {
+  const normalized = (value ?? "").trim().toLowerCase().replace(/\./g, "");
+  if (!normalized) return "";
+  return STATE_NAME_BY_CODE[normalized] ?? normalized;
+}
+
+function inferElectionState(election: ElectionRecord): string {
+  const loweredName = election.name.toLowerCase();
+  const matchedState = Object.values(STATE_NAME_BY_CODE).find((stateName) => loweredName.includes(stateName));
+  return matchedState ?? normalizeStateToken(election.state);
+}
+
+function statesMatch(a: string | null | undefined, b: string | null | undefined): boolean {
+  const left = normalizeStateToken(a);
+  const right = normalizeStateToken(b);
+  return !!left && !!right && left === right;
+}
+
+function titleCase(value: string | null | undefined): string {
+  return (value ?? "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function formatElectionContext(election: ElectionRecord): string {
+  const parts: string[] = [];
+  const normalizedState = inferElectionState(election);
+  if (normalizedState && !election.name.toLowerCase().includes(normalizedState)) {
+    parts.push(titleCase(normalizedState));
+  }
+
+  const normalizedType = (election.election_type ?? "").trim().toLowerCase();
+  if (normalizedType && !election.name.toLowerCase().includes(normalizedType)) {
+    parts.push(titleCase(normalizedType));
+  }
+
+  return parts.join(" · ");
+}
+
 /* ═══════════════════════════════════════════════════════════════════ */
 /*                        MAIN COMPONENT                              */
 /* ═══════════════════════════════════════════════════════════════════ */
@@ -176,42 +277,6 @@ export default function VotingAssistantHomepage({
   const [pollingError, setPollingError] = useState<string | null>(null);
 
   const hasLocation = !!(user?.state && user?.city);
-
-  function buildCommunityPrompt() {
-    const location =
-      user?.city && user?.state
-        ? `${user.city}, ${user.state}`
-        : user?.state || "my area";
-    const electionName =
-      electionsList && electionsList.length > 0
-        ? electionsList[0].name
-        : "the upcoming election";
-    return `How could ${electionName} in ${location} impact different groups in the community? Please break down the potential effects on students, renters, families with children, seniors, small business owners, and low-income residents. Keep the explanation neutral and in plain language.`;
-  }
-
-  const features = [
-    {
-      title: "Explain My Ballot",
-      desc: "Get plain-language summaries of races and ballot measures.",
-      icon: "🗳️",
-      onClick: onOpenBallot,
-      cta: "View ballot →",
-    },
-    {
-      title: "Voting Info Near Me",
-      desc: "Find registration help, deadlines, polling places, and ID requirements.",
-      icon: "📍",
-      onClick: onOpenBallot,
-      cta: "Find info →",
-    },
-    {
-      title: "Community Impact",
-      desc: "See how the current election could affect students, renters, families, and seniors.",
-      icon: "🌍",
-      onClick: () => onOpenExploreWithPrompt(buildCommunityPrompt()),
-      cta: "Ask AI →",
-    },
-  ];
 
   /* ── sync profile prop → internal user so check-in refreshes ───────── */
 
@@ -309,6 +374,39 @@ export default function VotingAssistantHomepage({
   }, [user?.id, hasLocation, user?.street_address, fetchLocationData]);
 
   useEffect(() => { void fetchGlobalData(); }, [fetchGlobalData]);
+
+  const currentDate = new Date();
+  const calendarYear = 2026;
+  const calendarMonthIndex = currentDate.getMonth();
+  const calendarMonthStart = new Date(calendarYear, calendarMonthIndex, 1);
+  const calendarMonthLabel = calendarMonthStart.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+  const daysInMonth = new Date(calendarYear, calendarMonthIndex + 1, 0).getDate();
+  const leadingBlankDays = calendarMonthStart.getDay();
+  const calendarSlots = Math.ceil((leadingBlankDays + daysInMonth) / 7) * 7;
+  const calendarMonthKey = `${calendarYear}-${String(calendarMonthIndex + 1).padStart(2, "0")}`;
+  const stateElections = (electionsList ?? [])
+    .filter((election) => (user?.state ? statesMatch(inferElectionState(election), user.state) : true))
+    .sort((a, b) => a.election_date.localeCompare(b.election_date));
+  const currentMonthElections = stateElections
+    .filter((election) => election.election_date?.startsWith(calendarMonthKey))
+    .sort((a, b) => a.election_date.localeCompare(b.election_date));
+  const nextElection = stateElections
+    .filter((election) => !!parseIsoDate(election.election_date))
+    .sort((a, b) => a.election_date.localeCompare(b.election_date))[0] ?? null;
+  const nextElectionDate = parseIsoDate(nextElection?.election_date);
+  const electionsByDay = currentMonthElections.reduce<Record<number, ElectionRecord[]>>((acc, election) => {
+    const parsed = parseIsoDate(election.election_date);
+    if (!parsed) return acc;
+    const day = parsed.getDate();
+    acc[day] = [...(acc[day] ?? []), election];
+    return acc;
+  }, {});
+  const todayInCalendarMonth =
+    currentDate.getFullYear() === calendarYear ? currentDate.getDate() : null;
+  const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   /* ── user / form helpers ──────────────────────────────────────────── */
 
@@ -531,37 +629,167 @@ export default function VotingAssistantHomepage({
                 <QuickStat label="Bills tracked" value={legislationList === null ? "—" : String(legislationList.length)} loading={legislationList === null} />
               </div>
 
-              {/* Upcoming 2026 Elections */}
+              <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Next election date</p>
+                    <h3 className="mt-2 text-xl font-bold text-slate-900" style={headingFontStyle}>
+                      {electionsList === null
+                        ? "Loading election calendar"
+                        : nextElection
+                          ? nextElection.name
+                          : "No election available"}
+                    </h3>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">
+                      {electionsList === null
+                        ? "Loading election calendar"
+                        : nextElectionDate
+                          ? nextElectionDate.toLocaleDateString("en-US", {
+                              weekday: "long",
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                          : "No date available"}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      {electionsList === null
+                        ? "Fetching the upcoming election schedule."
+                        : nextElection
+                          ? formatElectionContext(nextElection) || "Upcoming election"
+                          : user?.state
+                            ? `No upcoming ${user.state} election could be loaded at this time.`
+                            : "No upcoming election could be loaded at this time."}
+                    </p>
+                  </div>
+                  <div className="rounded-[1.5rem] bg-slate-50 px-4 py-3 text-center">
+                    {electionsList === null ? (
+                      <div className="h-10 w-12 animate-pulse rounded-xl bg-slate-200" />
+                    ) : nextElectionDate ? (
+                      <>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                          {nextElectionDate.toLocaleDateString("en-US", { month: "short" })}
+                        </p>
+                        <p className="mt-1 text-3xl font-black text-slate-900">{nextElectionDate.getDate()}</p>
+                      </>
+                    ) : (
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">None</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Current month election calendar */}
               <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Upcoming elections in 2026</p>
                   {electionsList !== null && (
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                      {electionsList.length} election{electionsList.length !== 1 ? "s" : ""}
+                      {currentMonthElections.length} this month
                     </span>
                   )}
                 </div>
-                <div className="mt-3 space-y-2">
-                  {electionsList === null ? (
-                    <Skeleton lines={4} />
-                  ) : electionsList.length === 0 ? (
-                    <PlaceholderCard icon="🗓️" title="No elections found" subtitle="No upcoming 2026 elections could be loaded at this time." />
-                  ) : (
-                    electionsList.map((election) => (
-                      <div key={election.id} className="flex items-start gap-3 rounded-[1.5rem] bg-slate-50 px-4 py-3">
-                        <span className="text-xl">🗓️</span>
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold text-slate-900">{election.name}</p>
-                          <p className="mt-0.5 text-xs text-slate-500">
-                            {election.election_date
-                              ? new Date(election.election_date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric" })
-                              : "Date TBD"}
-                            {" · "}{election.level}{election.election_type ? ` · ${election.election_type}` : ""}
-                          </p>
-                        </div>
+                <div className="mt-4 rounded-[1.5rem] bg-slate-50 p-4">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{calendarMonthLabel}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Today is{" "}
+                        {currentDate.toLocaleDateString("en-US", {
+                          weekday: "long",
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                      {user?.state && (
+                        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                          Showing {user.state} elections only
+                        </p>
+                      )}
+                    </div>
+                    <div className="rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 shadow-sm">
+                      {electionsList === null ? "Loading" : currentMonthElections.length > 0 ? "Election dates marked" : "No elections marked"}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-7 gap-2">
+                    {weekdayLabels.map((label) => (
+                      <div key={label} className="text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                        {label}
                       </div>
-                    ))
-                  )}
+                    ))}
+                    {Array.from({ length: calendarSlots }).map((_, index) => {
+                      const dayNumber = index - leadingBlankDays + 1;
+                      if (dayNumber < 1 || dayNumber > daysInMonth) {
+                        return <div key={`blank-${index}`} className="aspect-square rounded-2xl bg-transparent" />;
+                      }
+
+                      const isToday = todayInCalendarMonth === dayNumber;
+                      const dayElections = electionsByDay[dayNumber] ?? [];
+                      const hasElection = dayElections.length > 0;
+                      const cellClasses = hasElection
+                        ? "border-slate-900 bg-slate-900 text-white"
+                        : isToday
+                          ? "border-slate-300 bg-white text-slate-900"
+                          : "border-transparent bg-white text-slate-700";
+
+                      return (
+                        <div
+                          key={dayNumber}
+                          className={`flex aspect-square flex-col items-center justify-center rounded-2xl border text-center shadow-sm ${cellClasses}`}
+                          title={
+                            hasElection
+                              ? dayElections
+                                  .map((election) => {
+                                    const context = formatElectionContext(election);
+                                    return context ? `${election.name} · ${context}` : election.name;
+                                  })
+                                  .join("\n")
+                              : undefined
+                          }
+                        >
+                          <span className={`text-sm font-semibold ${hasElection ? "text-white" : "text-inherit"}`}>
+                            {dayNumber}
+                          </span>
+                          {hasElection ? (
+                            <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-200">
+                              {dayElections.length === 1 ? "Vote" : `${dayElections.length}x`}
+                            </span>
+                          ) : isToday ? (
+                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-slate-400" />
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-4">
+                    {electionsList === null ? (
+                      <Skeleton lines={2} />
+                    ) : currentMonthElections.length === 0 ? (
+                      <p className="text-sm text-slate-500">
+                        {user?.state
+                          ? `No ${user.state} election dates were returned for this month.`
+                          : "No election dates were returned for this month."}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-slate-600">
+                        {currentMonthElections
+                          .map((election) => {
+                            const parsed = parseIsoDate(election.election_date);
+                            const dateLabel = parsed
+                              ? parsed.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                              : election.election_date;
+                            const context = formatElectionContext(election);
+                            return context
+                              ? `${dateLabel}: ${election.name} · ${context}`
+                              : `${dateLabel}: ${election.name}`;
+                          })
+                          .join(" • ")}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -707,50 +935,6 @@ export default function VotingAssistantHomepage({
               </form>
             </div>
           )}
-        </div>
-
-        <div className="px-6 pb-24 pt-6">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold" style={headingFontStyle}>How we help</h3>
-              <p className="text-sm text-slate-500">Designed for first-time and underserved voters</p>
-            </div>
-            <button
-              type="button"
-              onClick={onOpenExplore}
-              className="text-sm font-semibold text-blue-600"
-            >
-              See all
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {features.map((feature) => (
-              <button
-                key={feature.title}
-                type="button"
-                onClick={feature.onClick}
-                className="w-full rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 text-left"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-50 text-2xl">
-                    {feature.icon}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <h4 className="text-base font-semibold" style={headingFontStyle}>
-                        {feature.title}
-                      </h4>
-                      <span className="shrink-0 text-xs font-semibold text-slate-400">{feature.cta}</span>
-                    </div>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">{feature.desc}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-
         </div>
 
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
