@@ -1,19 +1,25 @@
+import { useState, type KeyboardEvent } from "react";
+
 type ProfilePageProps = {
   profile: UserProfile;
   onChange: (profile: UserProfile) => void;
   onOpenProfile: () => void;
+  onOpenExplore: () => void;
   onOpenBallot: () => void;
   onOpenHome: () => void;
 };
 
 export type UserProfile = {
-  age: string;
+  id?: string;
+  name: string;
+  age_range: string;
   ethnicity: string;
-  interests: string;
-  salary: string;
+  interests: string[];
+  salary_range: string;
   gender: string;
   state: string;
   city: string;
+  language_preference: string;
 };
 
 const ageOptions = ["Under 18", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
@@ -43,77 +49,136 @@ const ethnicityOptions = [
   "Prefer not to say",
 ];
 
+const interestOptions = [
+  "Taxes",
+  "Abortion",
+  "Voting Rights",
+  "Housing",
+  "Education",
+  "Healthcare",
+  "Transportation",
+  "Climate",
+  "Economy",
+  "Immigration",
+  "Public Safety",
+  "Reproductive Rights",
+  "Labor",
+  "Student Debt",
+];
+
+function parseInterests(value: string) {
+  return value
+    .split(/[,;\n]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function navClass(isActive: boolean) {
+  return isActive
+    ? "text-[#0F172A]"
+    : "text-slate-400 transition-colors hover:text-slate-600";
+}
+
 export default function ProfilePage({
   profile,
   onChange,
   onOpenProfile,
+  onOpenExplore,
   onOpenBallot,
   onOpenHome,
 }: ProfilePageProps) {
-  const updateField = (field: keyof UserProfile, value: string) => {
+  const [interestDraft, setInterestDraft] = useState("");
+
+  const updateField = (field: keyof UserProfile, value: string | string[]) => {
     onChange({
       ...profile,
       [field]: value,
     });
   };
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-white shadow-2xl">
-        <div className="bg-gradient-to-b from-blue-700 via-blue-600 to-cyan-500 px-6 pb-8 pt-8 text-white">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-100">Your voter profile</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight">Profile setup</h1>
-            </div>
-            <button
-              type="button"
-              onClick={onOpenHome}
-              className="rounded-2xl bg-white/15 px-3 py-2 text-sm font-medium backdrop-blur transition hover:bg-white/20"
-            >
-              Back home
-            </button>
-          </div>
+  const toggleInterest = (interest: string) => {
+    const nextInterests = profile.interests.includes(interest)
+      ? profile.interests.filter((item) => item !== interest)
+      : [...profile.interests, interest];
 
-          <div className="rounded-3xl bg-white/12 p-5 backdrop-blur">
-            <p className="text-sm font-medium text-blue-100">Tell us about you</p>
-            <h2 className="mt-2 text-2xl font-semibold leading-tight">
-              Personalize voting guidance around your community and priorities.
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-blue-50">
-              This profile is a simple starting point for tailoring ballot information by location
-              and issues that matter to you.
-            </p>
-          </div>
+    updateField("interests", nextInterests);
+  };
+
+  const addInterest = (rawValue: string) => {
+    const next = rawValue.trim();
+    if (!next) return;
+    if (profile.interests.includes(next)) {
+      setInterestDraft("");
+      return;
+    }
+    updateField("interests", [...profile.interests, next]);
+    setInterestDraft("");
+  };
+
+  const removeInterest = (interest: string) => {
+    updateField(
+      "interests",
+      profile.interests.filter((item) => item !== interest),
+    );
+  };
+
+  const handleInterestKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      addInterest(interestDraft);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FBFBFA] text-[#0F172A] selection:bg-slate-200">
+      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-[#FBFBFA] shadow-2xl">
+        <main className="px-6 pb-24 pt-8">
+        <div className="mb-6 flex justify-end">
+          <button
+            type="button"
+            onClick={onOpenHome}
+            className="group flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-slate-900"
+          >
+            <span className="text-base transition-transform group-hover:-translate-x-1">←</span>
+            <span>Back</span>
+          </button>
         </div>
 
-        <div className="-mt-4 px-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-lg">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  Profile details
-                </p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-900">
-                  Fill out your voter snapshot
-                </h3>
-                <p className="mt-1 text-sm leading-6 text-slate-600">
-                  You can update these details any time as we build out the rest of the app.
-                </p>
+        <div className="mb-10">
+          <span className="mb-4 inline-block rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-600">
+            Voter Setup
+          </span>
+          <h1 className="text-4xl font-black tracking-tight">
+            Build your voter profile.
+          </h1>
+          <p className="mt-4 max-w-[28rem] text-base leading-relaxed text-slate-500">
+            Tailor your ballot information by sharing your priorities. This helps us highlight
+            candidates that align with your values without changing the backend profile schema.
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          <section className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-lg text-slate-900">
+                ☺︎
               </div>
-              <div className="rounded-2xl bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
-                7 fields
+              <div>
+                <h2 className="text-lg font-bold">Demographics</h2>
+                <p className="text-xs text-slate-400">General information about you</p>
               </div>
             </div>
 
-            <div className="mt-5 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-900">Age</span>
+            <div className="grid grid-cols-1 gap-5">
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Age Range
+                </span>
+                <div className="relative group">
                   <select
-                    value={profile.age}
-                    onChange={(event) => updateField("age", event.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                    value={profile.age_range}
+                    onChange={(event) => updateField("age_range", event.target.value)}
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
                   >
                     <option value="">Select age range</option>
                     {ageOptions.map((option) => (
@@ -122,14 +187,21 @@ export default function ProfilePage({
                       </option>
                     ))}
                   </select>
-                </label>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 transition-colors group-focus-within:text-slate-900">
+                    ˅
+                  </span>
+                </div>
+              </label>
 
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-900">Salary</span>
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Salary Range
+                </span>
+                <div className="relative group">
                   <select
-                    value={profile.salary}
-                    onChange={(event) => updateField("salary", event.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                    value={profile.salary_range}
+                    onChange={(event) => updateField("salary_range", event.target.value)}
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
                   >
                     <option value="">Select salary range</option>
                     {salaryOptions.map((option) => (
@@ -138,18 +210,21 @@ export default function ProfilePage({
                       </option>
                     ))}
                   </select>
-                </label>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-900">
-                    Ethnicity
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 transition-colors group-focus-within:text-slate-900">
+                    ˅
                   </span>
+                </div>
+              </label>
+
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Ethnicity
+                </span>
+                <div className="relative group">
                   <select
                     value={profile.ethnicity}
                     onChange={(event) => updateField("ethnicity", event.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
                   >
                     <option value="">Select ethnicity</option>
                     {ethnicityOptions.map((option) => (
@@ -158,14 +233,21 @@ export default function ProfilePage({
                       </option>
                     ))}
                   </select>
-                </label>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 transition-colors group-focus-within:text-slate-900">
+                    ˅
+                  </span>
+                </div>
+              </label>
 
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-900">Gender</span>
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Gender
+                </span>
+                <div className="relative group">
                   <select
                     value={profile.gender}
                     onChange={(event) => updateField("gender", event.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                    className="w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
                   >
                     <option value="">Select gender</option>
                     {genderOptions.map((option) => (
@@ -174,122 +256,192 @@ export default function ProfilePage({
                       </option>
                     ))}
                   </select>
-                </label>
-              </div>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 transition-colors group-focus-within:text-slate-900">
+                    ˅
+                  </span>
+                </div>
+              </label>
+            </div>
+          </section>
 
-              <label className="block">
-                <span className="mb-2 block text-sm font-semibold text-slate-900">Interests</span>
-                <textarea
-                  value={profile.interests}
-                  onChange={(event) => updateField("interests", event.target.value)}
-                  placeholder="Education, housing, transit, climate..."
-                  className="min-h-28 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+          <section className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-lg text-slate-900">
+                ⌖
+              </div>
+              <div>
+                <h2 className="text-lg font-bold">Location</h2>
+                <p className="text-xs text-slate-400">Where you'll be voting</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5">
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  State
+                </span>
+                <input
+                  type="text"
+                  value={profile.state}
+                  onChange={(event) => updateField("state", event.target.value)}
+                  placeholder="e.g. California"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-300 focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
                 />
               </label>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-900">State</span>
-                  <input
-                    type="text"
-                    value={profile.state}
-                    onChange={(event) => updateField("state", event.target.value)}
-                    placeholder="State for voting information"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
-                  />
-                </label>
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  City
+                </span>
+                <input
+                  type="text"
+                  value={profile.city}
+                  onChange={(event) => updateField("city", event.target.value)}
+                  placeholder="e.g. Los Angeles"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-300 focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
+                />
+              </label>
+            </div>
+          </section>
 
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-900">City</span>
-                  <input
-                    type="text"
-                    value={profile.city}
-                    onChange={(event) => updateField("city", event.target.value)}
-                    placeholder="City for voting information"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
-                  />
-                </label>
+          <section className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-lg text-slate-900">
+                ♡
               </div>
-            </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.01]"
-              >
-                Save profile
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  onChange({
-                    age: "",
-                    ethnicity: "",
-                    interests: "",
-                    salary: "",
-                    gender: "",
-                    state: "",
-                    city: "",
-                  })
-                }
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                Clear form
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-6 pb-24 pt-6">
-          <div className="rounded-3xl bg-emerald-50 p-5 ring-1 ring-emerald-100">
-            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-emerald-700">Why this helps</p>
-                <h4 className="mt-1 text-lg font-semibold text-slate-900">
-                  Location and priorities shape what appears on your ballot
-                </h4>
-                <p className="mt-2 text-sm leading-6 text-slate-700">
-                  City and state help us focus voting information. Interests and demographics can
-                  later help explain community impact in more relevant terms.
-                </p>
+                <h2 className="text-lg font-bold">Interests & Priorities</h2>
+                <p className="text-xs text-slate-400">Issues that matter most to you</p>
               </div>
-              <div className="rounded-2xl bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">
-                Draft
+            </div>
+
+            <label className="space-y-1.5">
+              <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                Focus Areas
+              </span>
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-4 transition-all focus-within:border-slate-900 focus-within:ring-4 focus-within:ring-slate-900/5">
+                <div className="flex flex-wrap gap-2">
+                  {profile.interests.map((interest) => (
+                    <button
+                      key={interest}
+                      type="button"
+                      onClick={() => removeInterest(interest)}
+                      className="rounded-full bg-slate-900 px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-slate-700"
+                    >
+                      {interest} ×
+                    </button>
+                  ))}
+                  <input
+                    type="text"
+                    value={interestDraft}
+                    onChange={(event) => setInterestDraft(event.target.value)}
+                    onKeyDown={handleInterestKeyDown}
+                    onBlur={() => addInterest(interestDraft)}
+                    placeholder={profile.interests.length ? "Add another focus area" : "Education, housing, transit, climate change..."}
+                    className="min-w-[10rem] flex-1 border-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-300"
+                  />
+                </div>
               </div>
+            </label>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {interestOptions.map((interest) => {
+                const isSelected = profile.interests.includes(interest);
+                return (
+                  <button
+                    key={interest}
+                    type="button"
+                    onClick={() => toggleInterest(interest)}
+                    className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition-all active:scale-95 ${
+                      isSelected
+                        ? "border-slate-900 bg-slate-900 text-white"
+                        : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-900 hover:text-slate-900"
+                    }`}
+                  >
+                    {isSelected ? "✓ " : "+ "}
+                    {interest}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <div className="flex flex-col items-center justify-between gap-6 border-t border-slate-100 pt-8">
+            <button
+              type="button"
+              onClick={() =>
+                onChange({
+                  id: profile.id,
+                  name: "",
+                  age_range: "",
+                  ethnicity: "",
+                  interests: [],
+                  salary_range: "",
+                  gender: "",
+                  state: "",
+                  city: "",
+                  language_preference: profile.language_preference || "en",
+                })
+              }
+              className="px-4 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-900"
+            >
+              Clear all fields
+            </button>
+
+            <div className="w-full">
+              <button
+                type="button"
+                className="w-full rounded-xl bg-[#0F172A] px-8 py-4 text-sm font-bold tracking-tight text-white shadow-lg shadow-slate-200 transition-all hover:bg-slate-800 active:scale-[0.98]"
+              >
+                Save Profile & Continue
+              </button>
             </div>
           </div>
         </div>
 
-        <div className="fixed bottom-0 mx-auto flex w-full max-w-md items-center justify-around border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
+        <footer className="mb-20 px-2 py-10 text-center text-[10px] text-slate-300">
+          <p>© 2024 BallotBridge. Your profile shape remains backend-compatible.</p>
+        </footer>
+      </main>
+
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
+        <nav className="pointer-events-auto mx-auto max-w-md border-t border-slate-100 bg-white">
+        <div className="mx-auto flex h-[4.5rem] max-w-md items-center justify-around">
           <button
             type="button"
             onClick={onOpenHome}
-            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(false)}`}
           >
-            <span className="text-lg">🏠</span>
-            Home
+            <span className="text-xl sm:text-2xl">⌂</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Home</span>
           </button>
-          <button type="button" className="flex flex-col items-center gap-1 text-xs text-slate-500">
-            <span className="text-lg">🔎</span>
-            Explore
+          <button
+            type="button"
+            onClick={onOpenExplore}
+            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(false)}`}
+          >
+            <span className="text-xl sm:text-2xl">⌕</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Explore</span>
           </button>
           <button
             type="button"
             onClick={onOpenBallot}
-            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(false)}`}
           >
-            <span className="text-lg">🗂️</span>
-            Ballot
+            <span className="text-xl sm:text-2xl">☑</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Ballot</span>
           </button>
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex flex-col items-center gap-1 text-xs font-semibold text-blue-600"
+            className={`flex flex-col items-center gap-1 px-4 py-2 ${navClass(true)}`}
           >
-            <span className="text-lg">👤</span>
-            Profile
+            <span className="text-xl sm:text-2xl">◉</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Profile</span>
           </button>
         </div>
+        </nav>
+      </div>
       </div>
     </div>
   );

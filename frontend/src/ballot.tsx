@@ -3,6 +3,7 @@ import type { UserProfile } from "./profile";
 type BallotPageProps = {
   profile: UserProfile;
   onOpenProfile: () => void;
+  onOpenExplore: () => void;
   onOpenBallot: () => void;
   onOpenHome: () => void;
 };
@@ -68,6 +69,7 @@ function badgeClasses(tone: string) {
 export default function BallotPage({
   profile,
   onOpenProfile,
+  onOpenExplore,
   onOpenBallot,
   onOpenHome,
 }: BallotPageProps) {
@@ -235,17 +237,22 @@ export default function BallotPage({
           </div>
         </div>
 
-        <div className="fixed bottom-0 mx-auto flex w-full max-w-md items-center justify-around border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
+          <div className="pointer-events-auto mx-auto flex w-full max-w-md items-center justify-around border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
           <button
             type="button"
             onClick={onOpenHome}
             className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
           >
-            <span className="text-lg">🏠</span>
+            <span className="text-lg">⌂</span>
             Home
           </button>
-          <button type="button" className="flex flex-col items-center gap-1 text-xs text-slate-500">
-            <span className="text-lg">🔎</span>
+          <button
+            type="button"
+            onClick={onOpenExplore}
+            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+          >
+            <span className="text-lg">⌕</span>
             Explore
           </button>
           <button
@@ -253,7 +260,7 @@ export default function BallotPage({
             onClick={onOpenBallot}
             className="flex flex-col items-center gap-1 text-xs font-semibold text-blue-600"
           >
-            <span className="text-lg">🗂️</span>
+            <span className="text-lg">☑</span>
             Ballot
           </button>
           <button
@@ -261,9 +268,10 @@ export default function BallotPage({
             onClick={onOpenProfile}
             className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
           >
-            <span className="text-lg">👤</span>
+            <span className="text-lg">◉</span>
             Profile
           </button>
+        </div>
         </div>
       </div>
     </div>
