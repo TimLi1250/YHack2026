@@ -1,29 +1,31 @@
 [
   {
-    "id": "00000000-0000-0000-0000-000000000001",
-    "name": "Alex Rivera",
-    "age_range": "55-64",
-    "ethnicity": "East Asian",
+    "id": "743e166f-7285-4fd7-b353-f244feef26b8",
+    "name": null,
+    "age_range": "25-34",
+    "ethnicity": "Black",
     "interests": [
-      "Housing",
+      "Abortion",
       "Education",
-      "Climate"
+      "Climate",
+      "Immigration"
     ],
-    "salary_range": "$100k-$200k",
-    "gender": "Male",
+    "salary_range": "$50k-$100k",
+    "gender": "Female",
     "state": "Virginia",
     "city": "Richmond",
+    "street_address": "123 Main St",
     "language_preference": "en",
     "normalized_location": {
       "city": "Richmond",
       "state": "Virginia"
     },
     "derived_traits": [
-      "older adult",
-      "higher income household",
-      "interested in housing",
+      "early-career adult",
+      "interested in abortion",
       "interested in education",
       "interested in climate",
+      "interested in immigration",
       "resident of Richmond",
       "voter in Virginia"
     ],
@@ -33,32 +35,29 @@
         "state": "Virginia"
       },
       "interest_buckets": {
-        "housing": [
-          "Housing"
+        "abortion": [
+          "Abortion"
         ],
         "education": [
           "Education"
         ],
         "climate": [
           "Climate"
+        ],
+        "immigration": [
+          "Immigration"
         ]
       },
       "likely_groups": [
-        "education_focused",
-        "housing_focused"
+        "education_focused"
       ],
       "summary": {
         "has_sensitive_fields": true,
-        "interest_count": 3,
+        "interest_count": 4,
         "language_preference": "en"
       }
     },
-    "created_at": "2026-01-01T00:00:00+00:00",
-<<<<<<< HEAD
-    "updated_at": "2026-03-29T13:18:40.446939+00:00",
-=======
-    "updated_at": "2026-03-29T13:13:14.225968+00:00",
->>>>>>> c056ea6f8b63c7e9834957fdd547593e6db3101b
-    "street_address": "123 Main St"
+    "created_at": "2026-03-29T13:35:53.818609+00:00",
+    "updated_at": "2026-03-29T13:53:17.913580+00:00"
   }
 ]
