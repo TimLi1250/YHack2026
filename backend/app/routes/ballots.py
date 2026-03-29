@@ -9,6 +9,7 @@ from app.services.ballot_service import (
     get_ballot_by_id,
     get_ballots_for_election,
     get_upcoming_ballots,
+    refresh_ballots_for_location,
     summarize_ballot,
 )
 from app.services.source_service import get_sources_for_entity
@@ -63,4 +64,15 @@ def ballots_for_election(election_id: str) -> list[dict[str, Any]]:
 async def fetch_ballots(request: BallotFetchRequest) -> dict[str, Any]:
     """Trigger ballot data fetching for a location."""
     ballots = await get_upcoming_ballots(request.state, request.city)
+    return {"count": len(ballots), "ballots": ballots}
+
+
+@router.post("/refresh")
+async def refresh_ballots(
+    state: str = Query(...),
+    city: str = Query(...),
+    street_address: str | None = Query(None),
+) -> dict[str, Any]:
+    """Force a fresh API fetch for a location, replacing stale cache."""
+    ballots = await refresh_ballots_for_location(state, city, street_address=street_address)
     return {"count": len(ballots), "ballots": ballots}
