@@ -1,6 +1,6 @@
 [
   {
-    "id": "leg_aec9075629b0",
+    "id": "leg_b084dbbf5913",
     "doc_type": "bill",
     "title": "Tennessee Valley Authority Salary Transparency Act",
     "chamber": "House",
@@ -9,26 +9,14 @@
     "session": "119",
     "status": "Received in the Senate and Read twice and referred to the Committee on Environment and Public Works.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/144?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/144",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/144?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/144"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160241+00:00",
-    "tags": [
-      "Labor",
-      "Energy",
-      "Government Transparency"
-    ],
-    "plain_summary": "Tennessee Valley Authority Salary Transparency Act still needs a generated summary. Fallback text is based only on the stored title or bill text.",
-    "vernacular_summary": "Tennessee Valley Authority Salary Transparency Act",
-    "effect_on_user": "A personalized legislation impact summary is not available yet.",
-    "effects_on_groups": [],
-    "uncertainties": [
-      "AI legislation summary unavailable; showing fallback text only."
-    ]
+    "created_at": "2026-03-29T00:39:46.160241+00:00"
   },
   {
     "id": "leg_4f0db22a9094",
@@ -40,28 +28,17 @@
     "session": "119",
     "status": "Referred to the House Committee on the Judiciary.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/134?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/134",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/134?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/134"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160259+00:00",
-    "tags": [
-      "Public Safety",
-      "Judiciary"
-    ],
-    "plain_summary": "Protecting our Communities from Sexual Predators Act still needs a generated summary. Fallback text is based only on the stored title or bill text.",
-    "vernacular_summary": "Protecting our Communities from Sexual Predators Act",
-    "effect_on_user": "A personalized legislation impact summary is not available yet.",
-    "effects_on_groups": [],
-    "uncertainties": [
-      "AI legislation summary unavailable; showing fallback text only."
-    ]
+    "created_at": "2026-03-29T00:39:46.160259+00:00"
   },
   {
-    "id": "leg_1e3fa5c7c204",
+    "id": "leg_f389f6ca0030",
     "doc_type": "bill",
     "title": "High Rise Fire Sprinkler Incentive Act of 2025",
     "chamber": "House",
@@ -70,21 +47,17 @@
     "session": "119",
     "status": "Referred to the House Committee on Ways and Means.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/173?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/173",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/173?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/173"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160267+00:00",
-    "tags": [
-      "Public Safety",
-      "Housing"
-    ]
+    "created_at": "2026-03-29T00:39:46.160267+00:00"
   },
   {
-    "id": "leg_afe8af9c92b3",
+    "id": "leg_51278060b88f",
     "doc_type": "bill",
     "title": "Inaction Has Consequences Act",
     "chamber": "House",
@@ -93,20 +66,17 @@
     "session": "119",
     "status": "Referred to the House Committee on House Administration.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/209?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/209",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/209?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/209"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160272+00:00",
-    "tags": [
-      "Topic Uncertain"
-    ]
+    "created_at": "2026-03-29T00:39:46.160272+00:00"
   },
   {
-    "id": "leg_925bda46309c",
+    "id": "leg_5f7c15fd3d69",
     "doc_type": "bill",
     "title": "Proposing an amendment to the Constitution of the United States to require that the Supreme Court of the United States be composed of nine justices.",
     "chamber": "House",
@@ -115,17 +85,22 @@
     "session": "119",
     "status": "Referred to the House Committee on the Judiciary.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hjres/1?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-joint-resolution/1",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hjres/1?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-joint-resolution/1"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160277+00:00"
+    "created_at": "2026-03-29T13:52:50.923526+00:00",
+    "raw_text": "[Congressional Bills 119th Congress] [From the U.S. Government Publishing Office] [H.J. Res. 1 Introduced in House (IH)] &lt;DOC&gt; 119th CONGRESS 1st Session H. J. RES. 1 Proposing an amendment to the Constitution of the United States to require that the Supreme Court of the United States be composed of nine justices. _______________________________________________________________________ IN THE HOUSE OF REPRESENTATIVES January 3, 2025 Mr. Biggs of Arizona submitted the following joint resolution; which was referred to the Committee on the Judiciary _______________________________________________________________________ JOINT RESOLUTION Proposing an amendment to the Constitution of the United States to require that the Supreme Court of the United States be composed of nine justices. Resolved by the Senate and House of Representatives of the United States of America in Congress assembled (two-thirds of each House concurring therein), That the following article is proposed as an amendment to the Constitution of the United States, which shall be valid to all intents and purposes as part of the Constitution when ratified by the legislatures of three-fourths of the several States within seven years after the date of its submission for ratification: ``Article-- ``The Supreme Court of the United States shall be composed of nine justices consisting of one chief justice and eight associate justices.''. &lt;all&gt;",
+    "tags": [
+      "Judiciary",
+      "Supreme Court"
+    ]
   },
   {
-    "id": "leg_c987479b1c8e",
+    "id": "leg_093f21a05c37",
     "doc_type": "bill",
     "title": "Housing Fairness Act of 2025",
     "chamber": "House",
@@ -134,21 +109,17 @@
     "session": "119",
     "status": "Referred to the House Committee on Financial Services.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/68?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/68",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/68?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/68"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160282+00:00",
-    "tags": [
-      "Housing",
-      "Civil Rights"
-    ]
+    "created_at": "2026-03-29T00:39:46.160282+00:00"
   },
   {
-    "id": "leg_4b141b28b841",
+    "id": "leg_7594340f956b",
     "doc_type": "bill",
     "title": "MAPWaters Act of 2025",
     "chamber": "House",
@@ -157,22 +128,17 @@
     "session": "119",
     "status": "Became Public Law No: 119-62.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/187?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/187",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/187?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/187"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160295+00:00",
-    "tags": [
-      "Water Resources",
-      "Climate",
-      "Infrastructure"
-    ]
+    "created_at": "2026-03-29T00:39:46.160295+00:00"
   },
   {
-    "id": "leg_d7e1af677bc1",
+    "id": "leg_0baa916b29b8",
     "doc_type": "bill",
     "title": "Fair Lending for All Act",
     "chamber": "House",
@@ -181,22 +147,17 @@
     "session": "119",
     "status": "Referred to the House Committee on Financial Services.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/166?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/166",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/166?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/166"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160300+00:00",
-    "tags": [
-      "Civil Rights",
-      "Economy",
-      "Housing"
-    ]
+    "created_at": "2026-03-29T00:39:46.160300+00:00"
   },
   {
-    "id": "leg_a0074a82c7e6",
+    "id": "leg_3c0c3799b310",
     "doc_type": "bill",
     "title": "SAVE Act",
     "chamber": "House",
@@ -205,20 +166,17 @@
     "session": "119",
     "status": "Received in the Senate.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/22?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/22",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/22?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/22"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160305+00:00",
-    "tags": [
-      "Uncertain"
-    ]
+    "created_at": "2026-03-29T00:39:46.160305+00:00"
   },
   {
-    "id": "leg_3c6e6b1033ab",
+    "id": "leg_5b700b2782e5",
     "doc_type": "bill",
     "title": "Protection of Women and Girls in Sports Act of 2025",
     "chamber": "House",
@@ -227,18 +185,13 @@
     "session": "119",
     "status": "Received in the Senate.",
     "introduced_at": null,
-    "source_url": "https://api.congress.gov/v3/bill/119/hr/28?format=json",
+    "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/28",
     "sources": [
       {
         "label": "Congress.gov",
-        "url": "https://api.congress.gov/v3/bill/119/hr/28?format=json"
+        "url": "https://www.congress.gov/bill/119th-congress/house-bill/28"
       }
     ],
-    "created_at": "2026-03-29T00:39:46.160310+00:00",
-    "tags": [
-      "Civil Rights",
-      "Education",
-      "LGBTQ+ Rights"
-    ]
+    "created_at": "2026-03-29T00:39:46.160310+00:00"
   }
 ]
