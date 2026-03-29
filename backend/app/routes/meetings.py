@@ -10,7 +10,10 @@ from app.services.meeting_service import (
     get_meetings,
     summarize_meeting_by_id,
 )
+from app.services.llm_service import generate_tags
 from app.services.source_service import get_sources_for_entity
+from app.storage import load_json, save_json
+from app.config import MEETINGS_FILE
 
 router = APIRouter(prefix="/meetings", tags=["meetings"])
 
@@ -55,3 +58,25 @@ async def fetch_meetings(request: MeetingFetchRequest) -> dict[str, Any]:
     """Fetch meeting data."""
     meetings = await get_meetings(chamber=request.chamber)
     return {"count": len(meetings), "meetings": meetings}
+
+
+@router.get("/{meeting_id}/tags")
+async def meeting_tags(meeting_id: str) -> dict[str, Any]:
+    """Generate or return cached interest tags for a meeting."""
+    all_meetings = load_json(MEETINGS_FILE)
+    meeting = None
+    meeting_idx = -1
+    for i, m in enumerate(all_meetings):
+        if m.get("id") == meeting_id:
+            meeting = m
+            meeting_idx = i
+            break
+    if meeting is None:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+    if meeting.get("tags"):
+        return {"id": meeting_id, "tags": meeting["tags"]}
+    tags = await generate_tags(meeting.get("title", ""), meeting.get("summary"))
+    meeting["tags"] = tags
+    all_meetings[meeting_idx] = meeting
+    save_json(MEETINGS_FILE, all_meetings)
+    return {"id": meeting_id, "tags": tags}

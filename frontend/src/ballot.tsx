@@ -11,6 +11,7 @@ type BallotPageProps = {
   onOpenProfile: () => void;
   onOpenExplore: () => void;
   onOpenBallot: () => void;
+  onOpenCongress: () => void;
   onOpenHome: () => void;
 };
 
@@ -321,6 +322,7 @@ export default function BallotPage({
   onOpenProfile,
   onOpenExplore,
   onOpenBallot,
+  onOpenCongress,
   onOpenHome,
 }: BallotPageProps) {
   const [pollingList, setPollingList] = useState<PollingLocation[] | null>(null);
@@ -546,7 +548,6 @@ export default function BallotPage({
                       }
                       return (
                         <>
-                        <>
                           <p className="mt-1 text-sm text-slate-600">
                             Confirm your registration, check your status, or request an absentee ballot at the official {profile.state} voter portal.
                           </p>
@@ -697,6 +698,14 @@ export default function BallotPage({
           >
             <span className="text-xl sm:text-2xl">☑</span>
             <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Ballot</span>
+          </button>
+          <button
+            type="button"
+            onClick={onOpenCongress}
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
+          >
+            <span className="text-xl sm:text-2xl">⚖</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Congress</span>
           </button>
           <button
             type="button"
