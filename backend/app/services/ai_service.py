@@ -10,7 +10,7 @@ from app.schemas import AIChatResponse, AIFactCheckResponse, AIUserContext, Sour
 from app.services.election_service import CIVIC_API_URL, VOTER_INFO_URL, get_upcoming_elections
 from app.services.geocode_service import STATE_ALIASES, get_civic_address, normalize_city, normalize_state
 from app.services.legislation_service import fetch_legislation
-from app.services.llm_service import grounded_chat, grounded_fact_check
+from app.services.llm_service import general_chat, grounded_chat, grounded_fact_check
 from app.services.source_service import get_sources_for_entity
 from app.services.user_service import get_user
 from app.storage import load_json
@@ -540,6 +540,16 @@ async def answer_chat(
     user_context: AIUserContext,
     conversation: list[dict[str, str]] | None = None,
 ) -> AIChatResponse:
+    general_answer: AIChatResponse | None = None
+    try:
+        general_answer = await general_chat(
+            question=question,
+            user_context=user_context,
+            conversation=conversation,
+        )
+    except Exception:
+        general_answer = None
+
     packet, citations = await retrieve_grounded_packet(question, user_context=user_context)
     return await grounded_chat(
         question=question,
@@ -547,6 +557,7 @@ async def answer_chat(
         source_packet=packet,
         sources=citations,
         conversation=conversation,
+        general_answer=general_answer,
     )
 
 

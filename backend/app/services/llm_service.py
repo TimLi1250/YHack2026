@@ -62,6 +62,17 @@ If you rely on general knowledge instead of the provided sources, say so briefly
 Return only valid JSON that matches the requested schema.
 """.strip()
 
+SYSTEM_CIVIC_CHAT_GENERAL = """
+You are a neutral civic information assistant.
+Answer from general civic knowledge first.
+Never recommend how to vote. Never persuade.
+Do not invent citations or imply that unsupplied sources support the answer.
+Avoid overconfident local details when the question depends on location or recent changes.
+Do not give generic research advice, process advice, or "consult these websites" guidance unless the user explicitly asks where to look.
+Answer the user's substantive question directly. If they ask about a person's positions, give the positions you know rather than describing how one should research politicians.
+Return only valid JSON that matches the requested schema.
+""".strip()
+
 
 def _normalize_language(language_preference: str | None) -> str:
     return (language_preference or "en").strip().lower() or "en"
@@ -353,7 +364,21 @@ def _fallback_chat_response(
     question: str,
     language: str,
     sources: list[SourceCitation],
+    general_answer: AIChatResponse | None = None,
 ) -> AIChatResponse:
+    if general_answer:
+        return AIChatResponse(
+            answer=general_answer.answer,
+            language=language,
+            follow_up_questions=general_answer.follow_up_questions,
+            uncertainties=_dedupe_strings(
+                [
+                    *general_answer.uncertainties,
+                    "Grounded local details could not be merged into the final answer.",
+                ]
+            ),
+            citations=[],
+        )
     return AIChatResponse(
         answer=f'I could not generate a model-backed answer for "{question}" right now. Please review the listed sources directly.',
         language=language,
@@ -603,14 +628,11 @@ async def grounded_chat(
     source_packet: list[dict[str, Any]],
     sources: list[SourceCitation],
     conversation: list[dict[str, str]] | None = None,
+    general_answer: AIChatResponse | None = None,
 ) -> AIChatResponse:
     language = _normalize_language(user_context.language_preference if user_context else None)
-    support_mode = (
-        "Use the retrieved records as your first source of truth. "
-        "If they are missing or insufficient, provide the most likely civic answer or guidance from general knowledge."
-    )
     prompt = f"""
-Task: answer a civic question as helpfully as possible.
+Task: answer a civic question by leading with the broad general answer and then adding grounded specifics.
 
 Language for output: {language}
 
@@ -622,6 +644,9 @@ User context:
 
 Question:
 {question}
+
+General civic answer draft:
+{json.dumps(general_answer.model_dump(exclude={"citations"}), indent=2, ensure_ascii=False) if general_answer else "No general answer draft was available."}
 
 Retrieved civic records:
 {json.dumps(source_packet, indent=2, ensure_ascii=False)}
@@ -637,10 +662,14 @@ Return:
 - language
 
 Rules:
-- {support_mode}
-- If you rely on general knowledge because the packet is weak, still answer directly and briefly note that local verification may be needed.
+- Start with the direct general answer to the user's question.
+- After that, add the most relevant specific details from the retrieved records when they exist.
+- Treat the general answer draft as the broad baseline unless the grounded records clearly refine or correct it.
+- If the retrieved records are weak or irrelevant, keep the answer broad and note that no strong local corroboration was found.
+- Do not switch into generic research advice or tell the user to consult websites unless they explicitly asked where to learn more.
+- When the user asks for a person's positions, policy views, record, or stance, answer with the positions or views themselves, not with advice about understanding politicians in general.
 - Keep the tone factual and easy to understand.
-- Include citations only from the provided source packet, and only when those sources directly support the answer.
+- Include citations only from the provided source packet, and only when those sources directly support the grounded specific details.
 - Never invent or imply a citation that is not in the provided source packet.
 """.strip()
 
@@ -660,7 +689,55 @@ Rules:
             citations=sanitized_citations,
         )
     except Exception:
-        return _fallback_chat_response(question, language, sources)
+        return _fallback_chat_response(question, language, sources, general_answer=general_answer)
+
+
+async def general_chat(
+    question: str,
+    user_context: AIUserContext | None,
+    conversation: list[dict[str, str]] | None = None,
+) -> AIChatResponse:
+    language = _normalize_language(user_context.language_preference if user_context else None)
+    prompt = f"""
+Task: answer a civic question directly from broad general civic knowledge before checking local records.
+
+Language for output: {language}
+
+Conversation context:
+{json.dumps(conversation or [], indent=2, ensure_ascii=False)}
+
+User context:
+{_format_user_context(user_context)}
+
+Question:
+{question}
+
+Return:
+- answer
+- follow_up_questions
+- uncertainties
+- citations
+- language
+
+Rules:
+- Give the user the most useful direct answer you can first.
+- Keep the answer broad and generally applicable.
+- If the topic depends on a location, street address, or recent election calendar, say that local verification may still be needed.
+- Do not claim you have a source packet in this step.
+- Do not answer with generic research advice, "consult official sources," or similar meta-guidance unless the user explicitly asked where to look.
+- If the user asks about a candidate or public figure's positions, summarize the positions directly.
+- If you cannot provide a substantive answer, say that plainly instead of replacing the answer with advice about how to research the topic.
+- citations must be an empty list.
+""".strip()
+
+    response = await call_llm_structured(SYSTEM_CIVIC_CHAT_GENERAL, prompt, AIChatResponse)
+    return AIChatResponse(
+        answer=response.answer,
+        language=language,
+        follow_up_questions=response.follow_up_questions,
+        uncertainties=_dedupe_strings(response.uncertainties),
+        citations=[],
+    )
 
 
 async def grounded_fact_check(
