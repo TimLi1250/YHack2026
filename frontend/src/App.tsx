@@ -15,6 +15,7 @@ const initialProfile: UserProfile = {
   gender: "",
   state: "",
   city: "",
+  street_address: "",
   language_preference: "en",
 };
 

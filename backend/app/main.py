@@ -8,6 +8,7 @@ from app.routes.elections import router as elections_router
 from app.routes.legislation import router as legislation_router
 from app.routes.meetings import router as meetings_router
 from app.routes.notifications import router as notifications_router
+from app.routes.polling import router as polling_router
 from app.routes.users import router as users_router
 
 app = FastAPI(title="Civic AI Backend")
@@ -27,6 +28,7 @@ app.include_router(elections_router)
 app.include_router(legislation_router)
 app.include_router(meetings_router)
 app.include_router(notifications_router)
+app.include_router(polling_router)
 
 
 @app.get("/health")
