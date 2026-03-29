@@ -22,17 +22,27 @@ const initialProfile: UserProfile = {
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [profile, setProfile] = useState<UserProfile>(initialProfile);
+  const [initialExplorePrompt, setInitialExplorePrompt] = useState("");
+
+  function openExploreWithPrompt(prompt: string) {
+    setInitialExplorePrompt(prompt);
+    setScreen("explore");
+  }
 
   return screen === "home" ? (
     <VotingAssistantHomepage
+      profile={profile}
       onOpenProfile={() => setScreen("profile")}
       onOpenExplore={() => setScreen("explore")}
+      onOpenExploreWithPrompt={openExploreWithPrompt}
       onOpenBallot={() => setScreen("ballot")}
       onOpenHome={() => setScreen("home")}
     />
   ) : screen === "explore" ? (
     <ExplorePage
       profile={profile}
+      initialPrompt={initialExplorePrompt}
+      onPromptConsumed={() => setInitialExplorePrompt("")}
       onOpenProfile={() => setScreen("profile")}
       onOpenExplore={() => setScreen("explore")}
       onOpenBallot={() => setScreen("ballot")}
