@@ -214,26 +214,26 @@ async def _auto_summarize(ballot: dict[str, Any], all_ballots: list[dict[str, An
     if ballot.get("plain_summary"):  # already summarized
         return
     try:
-        summary = await summarize_ballot_text(
-            ballot_text=ballot.get("ballot_text", ""),
-            title=ballot.get("title", ""),
+        summary = await summarize_ballot_record(
+            ballot_record=ballot,
+            user_context=None,
+            sources=[],
         )
-        if isinstance(summary, dict) and "raw_response" not in summary:
-            ballot["plain_summary"] = summary.get("plain_summary")
-            ballot["simple_summary"] = summary.get("simple_summary")
-            ballot["one_sentence"] = summary.get("one_sentence")
-            ballot["yes_means"] = summary.get("yes_means")
-            ballot["no_means"] = summary.get("no_means")
-            ballot["effect_on_user"] = summary.get("effect_on_user")
-            ballot["effects_on_groups"] = summary.get("effects_on_groups", [])
-            # Persist the enriched record back to disk
-            fresh = load_json(BALLOTS_FILE)
-            for i, b in enumerate(fresh):
-                if b.get("id") == ballot["id"]:
-                    fresh[i] = ballot
-                    break
-            save_json(BALLOTS_FILE, fresh)
-            logger.info("Auto-summarized ballot %s", ballot["id"])
+        ballot["plain_summary"] = summary.plain_summary
+        ballot["simple_summary"] = summary.simple_summary
+        ballot["one_sentence"] = summary.one_sentence
+        ballot["yes_means"] = summary.yes_means
+        ballot["no_means"] = summary.no_means
+        ballot["effect_on_user"] = summary.effect_on_user
+        ballot["effects_on_groups"] = summary.effects_on_groups
+        # Persist the enriched record back to disk
+        fresh = load_json(BALLOTS_FILE)
+        for i, b in enumerate(fresh):
+            if b.get("id") == ballot["id"]:
+                fresh[i] = ballot
+                break
+        save_json(BALLOTS_FILE, fresh)
+        logger.info("Auto-summarized ballot %s", ballot["id"])
     except Exception as exc:
         logger.warning("Auto-summarization failed for ballot %s: %s", ballot.get("id"), exc)
 

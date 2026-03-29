@@ -458,5 +458,15 @@
     "snippet": null,
     "retrieved_at": "2026-03-29T11:21:32.375619+00:00",
     "trust_tier": "unverified"
+  },
+  {
+    "id": "src_b9e5460037d8",
+    "entity_type": "ballot",
+    "entity_id": "ballot_91c21cef4aac",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:34:12.434399+00:00",
+    "trust_tier": "unverified"
   }
 ]
