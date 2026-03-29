@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/api.ts","./src/homepage.tsx","./src/main.tsx","./src/vite-env.d.ts"],"version":"6.0.2"}
+{"root":["./src/app.tsx","./src/api.ts","./src/ballot.tsx","./src/explore.tsx","./src/homepage.tsx","./src/main.tsx","./src/profile.tsx","./src/vite-env.d.ts"],"version":"6.0.2"}

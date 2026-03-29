@@ -1,18 +1,21 @@
 import { useState } from "react";
 import BallotPage from "./ballot";
+import ExplorePage from "./explore";
 import VotingAssistantHomepage from "./homepage";
 import ProfilePage, { type UserProfile } from "./profile";
 
-type Screen = "home" | "ballot" | "profile";
+type Screen = "home" | "explore" | "ballot" | "profile";
 
 const initialProfile: UserProfile = {
-  age: "",
+  name: "",
+  age_range: "",
   ethnicity: "",
-  interests: "",
-  salary: "",
+  interests: [],
+  salary_range: "",
   gender: "",
   state: "",
   city: "",
+  language_preference: "en",
 };
 
 export default function App() {
@@ -22,6 +25,15 @@ export default function App() {
   return screen === "home" ? (
     <VotingAssistantHomepage
       onOpenProfile={() => setScreen("profile")}
+      onOpenExplore={() => setScreen("explore")}
+      onOpenBallot={() => setScreen("ballot")}
+      onOpenHome={() => setScreen("home")}
+    />
+  ) : screen === "explore" ? (
+    <ExplorePage
+      profile={profile}
+      onOpenProfile={() => setScreen("profile")}
+      onOpenExplore={() => setScreen("explore")}
       onOpenBallot={() => setScreen("ballot")}
       onOpenHome={() => setScreen("home")}
     />
@@ -29,6 +41,7 @@ export default function App() {
     <BallotPage
       profile={profile}
       onOpenProfile={() => setScreen("profile")}
+      onOpenExplore={() => setScreen("explore")}
       onOpenBallot={() => setScreen("ballot")}
       onOpenHome={() => setScreen("home")}
     />
@@ -37,6 +50,7 @@ export default function App() {
       profile={profile}
       onChange={setProfile}
       onOpenProfile={() => setScreen("profile")}
+      onOpenExplore={() => setScreen("explore")}
       onOpenBallot={() => setScreen("ballot")}
       onOpenHome={() => setScreen("home")}
     />
