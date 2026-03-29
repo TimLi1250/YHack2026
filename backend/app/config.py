@@ -24,8 +24,8 @@ DEFAULT_LANGUAGE = "en"
 DEFAULT_READING_LEVEL = "plain"
 
 # --------------- API keys (env vars) ---------------
-OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 GOOGLE_CIVIC_API_KEY: str = os.getenv("GOOGLE_CIVIC_API_KEY", "")
 GEOCODE_API_KEY: str = os.getenv("GEOCODE_API_KEY", "")
 CONGRESS_API_KEY: str = os.getenv("CONGRESS_API_KEY", "")

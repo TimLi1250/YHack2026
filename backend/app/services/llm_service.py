@@ -6,38 +6,36 @@ from typing import Any
 
 import httpx
 
-from app.config import LLM_MAX_TOKENS, LLM_TEMPERATURE, OPENAI_API_KEY, OPENAI_MODEL
+from app.config import GEMINI_API_KEY, GEMINI_MODEL, LLM_MAX_TOKENS, LLM_TEMPERATURE
 
 logger = logging.getLogger(__name__)
 
-OPENAI_CHAT_URL = "https://api.openai.com/v1/chat/completions"
+GEMINI_URL_TEMPLATE = (
+    "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
+)
 
 
 async def call_llm(system_prompt: str, user_prompt: str) -> str:
-    """Send a prompt to the OpenAI chat API and return the text response."""
-    if not OPENAI_API_KEY:
-        logger.warning("OPENAI_API_KEY not set – returning empty LLM response")
+    """Send a prompt to the Gemini API and return the text response."""
+    if not GEMINI_API_KEY:
+        logger.warning("GEMINI_API_KEY not set – returning empty LLM response")
         return ""
 
-    headers = {
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
-        "Content-Type": "application/json",
-    }
+    url = GEMINI_URL_TEMPLATE.format(model=GEMINI_MODEL, key=GEMINI_API_KEY)
     payload = {
-        "model": OPENAI_MODEL,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        "max_tokens": LLM_MAX_TOKENS,
-        "temperature": LLM_TEMPERATURE,
+        "system_instruction": {"parts": [{"text": system_prompt}]},
+        "contents": [{"parts": [{"text": user_prompt}]}],
+        "generationConfig": {
+            "maxOutputTokens": LLM_MAX_TOKENS,
+            "temperature": LLM_TEMPERATURE,
+        },
     }
 
     async with httpx.AsyncClient(timeout=60) as client:
-        resp = await client.post(OPENAI_CHAT_URL, headers=headers, json=payload)
+        resp = await client.post(url, json=payload)
         resp.raise_for_status()
         data = resp.json()
-    return data["choices"][0]["message"]["content"]
+    return data["candidates"][0]["content"]["parts"][0]["text"]
 
 
 async def call_llm_json(system_prompt: str, user_prompt: str) -> dict[str, Any]:
