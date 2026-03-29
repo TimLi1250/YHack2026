@@ -105,13 +105,13 @@ function SourcesList({ sources }: { sources?: { label: string; url: string }[] }
 
 function QuickStat({ label, value, loading }: { label: string; value: string; loading: boolean }) {
   return (
-    <div className="rounded-2xl bg-slate-50 p-3 text-center">
+    <div className="rounded-[1.5rem] border border-slate-100 bg-white p-4 text-center shadow-sm">
       {loading ? (
         <div className="mx-auto h-6 w-8 animate-pulse rounded bg-slate-200" />
       ) : (
-        <p className="text-xl font-bold text-blue-600">{value}</p>
+        <p className="text-xl font-bold text-slate-900">{value}</p>
       )}
-      <p className="mt-1 text-xs text-slate-500">{label}</p>
+      <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-slate-400">{label}</p>
     </div>
   );
 }
@@ -366,68 +366,80 @@ export default function VotingAssistantHomepage({
 
   return (
     <div
-      className="min-h-screen bg-slate-50 text-slate-900"
+      className="min-h-screen bg-[#FBFBFA] text-[#0F172A] selection:bg-slate-200"
       style={{ fontFamily: "Roboto, sans-serif" }}
     >
-      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-white shadow-2xl">
-        <div className="bg-gradient-to-b from-blue-700 via-blue-600 to-cyan-500 px-6 pb-8 pt-8 text-white">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-100">Civic access for everyone</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight" style={headingFontStyle}>
-                BallotBridge
-              </h1>
-            </div>
-            <div className="rounded-2xl bg-white/15 px-3 py-2 text-sm font-medium backdrop-blur">
+      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-[#FBFBFA] shadow-2xl">
+        <div className="px-6 pb-8 pt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-600">
+              Civic Dashboard
+            </span>
+            <div className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
               Nonpartisan
             </div>
           </div>
+          <div className="mb-6">
+            <div>
+              <p className="text-sm font-medium text-slate-400">Civic access for everyone</p>
+              <h1 className="mt-2 text-4xl font-black tracking-tight" style={headingFontStyle}>
+                BallotBridge
+              </h1>
+              <p className="mt-4 max-w-[28rem] text-base leading-relaxed text-slate-500">
+                Understand your ballot in clear language, track election logistics, and move
+                between overview, ballot prep, and AI guidance in one place.
+              </p>
+            </div>
+          </div>
 
-          <div className="rounded-3xl bg-white/12 p-5 backdrop-blur">
-            <p className="text-sm font-medium text-blue-100">Welcome back</p>
-            <h2 className="mt-2 text-2xl font-semibold leading-tight" style={headingFontStyle}>
-              Understand your ballot in clear, simple language.
+          <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Welcome back</p>
+            <h2 className="mt-2 text-2xl font-bold leading-tight text-slate-900" style={headingFontStyle}>
+              Start with what matters most right now.
             </h2>
-            <p className="mt-3 text-sm leading-6 text-blue-50">
-              Get trusted voting information, personalized guidance, and community-focused
-              explanations in minutes.
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              Open the ballot hub for logistics, or jump into Explore when you want quick AI help.
             </p>
 
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <button className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:scale-[1.01]">
-                Get started
+              <button
+                type="button"
+                onClick={onOpenExplore}
+                className="rounded-[1.5rem] bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                Open Explore
               </button>
               <button
                 type="button"
                 onClick={onOpenBallot}
-                className="rounded-2xl border border-white/40 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
-                View sample ballot
+                Open Ballot
               </button>
             </div>
           </div>
         </div>
 
         {/* ── MAIN CONTENT ────────────────────────────────────────── */}
-        <div className="-mt-4 px-6 pb-24">
+        <div className="px-6 pb-24">
 
           {/* ════════════ HOME TAB ════════════ */}
           {activeTab === "home" && (
             <>
               {/* Election check-in card */}
-              <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-lg">
+              <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Your election check-in</p>
-                    <h3 className="mt-2 text-lg font-semibold text-slate-900">Stay ready for the next election</h3>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Your election check-in</p>
+                    <h3 className="mt-2 text-xl font-bold text-slate-900" style={headingFontStyle}>Stay ready for the next election</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
                       {hasLocation
                         ? "Track important dates, upcoming reminders, and what to do next."
                         : "Set your city and state in your profile to see upcoming dates."}
                     </p>
                   </div>
                   {notificationsList !== null && (
-                    <div className="rounded-2xl bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 ring-1 ring-amber-100">
+                    <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                       {notificationsList.length} upcoming
                     </div>
                   )}
@@ -442,13 +454,13 @@ export default function VotingAssistantHomepage({
                     <PlaceholderCard icon="🔔" title="No reminders yet" subtitle="Tap &quot;Check deadlines&quot; to generate reminders." />
                   ) : (
                     notificationsList.slice(0, 5).map((n) => (
-                      <div key={n.id} className="flex items-start justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3">
+                      <div key={n.id} className="flex items-start justify-between gap-4 rounded-[1.5rem] bg-slate-50 px-4 py-3">
                         <div>
                           <p className="text-sm font-semibold text-slate-900">{formatNotifType(n.notification_type)}</p>
                           <p className="mt-1 text-sm text-slate-600">{n.message}</p>
                         </div>
                         {n.scheduled_for && (
-                          <div className="shrink-0 rounded-2xl bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm">
+                          <div className="shrink-0 rounded-full bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm">
                             {formatDate(n.scheduled_for)}
                           </div>
                         )}
@@ -459,10 +471,10 @@ export default function VotingAssistantHomepage({
 
                 {hasLocation && (
                   <div className="mt-4 grid grid-cols-2 gap-3">
-                    <button onClick={handleCheckDeadlines} className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+                    <button onClick={handleCheckDeadlines} className="rounded-[1.5rem] bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
                       Check deadlines
                     </button>
-                    <button onClick={() => switchTab("ballot")} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <button onClick={onOpenBallot} className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                       View ballot
                     </button>
                   </div>
@@ -477,11 +489,11 @@ export default function VotingAssistantHomepage({
               </div>
 
               {/* Upcoming 2026 Elections */}
-              <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-lg">
+              <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Upcoming elections in 2026</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Upcoming elections in 2026</p>
                   {electionsList !== null && (
-                    <span className="rounded-2xl bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                       {electionsList.length} election{electionsList.length !== 1 ? "s" : ""}
                     </span>
                   )}
@@ -493,7 +505,7 @@ export default function VotingAssistantHomepage({
                     <PlaceholderCard icon="🗓️" title="No elections found" subtitle="No upcoming 2026 elections could be loaded at this time." />
                   ) : (
                     electionsList.map((election) => (
-                      <div key={election.id} className="flex items-start gap-3 rounded-2xl bg-slate-50 px-4 py-3">
+                      <div key={election.id} className="flex items-start gap-3 rounded-[1.5rem] bg-slate-50 px-4 py-3">
                         <span className="text-xl">🗓️</span>
                         <div className="flex-1">
                           <p className="text-sm font-semibold text-slate-900">{election.name}</p>
@@ -511,19 +523,26 @@ export default function VotingAssistantHomepage({
               </div>
 
               {/* Impact mode CTA */}
-              <div className="mt-6 rounded-3xl bg-emerald-50 p-5 ring-1 ring-emerald-100">
-                <p className="text-sm font-semibold text-emerald-700">Impact mode</p>
-                <h4 className="mt-1 text-lg font-semibold text-slate-900">Explore what matters to your community</h4>
-                <p className="mt-2 text-sm leading-6 text-slate-700">
+              <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Impact mode</p>
+                <h4 className="mt-2 text-xl font-bold text-slate-900" style={headingFontStyle}>Explore what matters to your community</h4>
+                <p className="mt-2 text-sm leading-6 text-slate-500">
                   View ballot measures through lenses like students, renters, families, and public transit users.
                 </p>
+                <button
+                  type="button"
+                  onClick={onOpenExplore}
+                  className="mt-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                >
+                  Ask in Explore
+                </button>
               </div>
 
               {/* Polling Location card */}
-              <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-lg">
+              <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Your polling location</p>
-                  <span className="text-lg">🗳️</span>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Your polling location</p>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Local</span>
                 </div>
 
                 {!hasLocation ? (
@@ -553,7 +572,7 @@ export default function VotingAssistantHomepage({
                 ) : (
                   <div className="mt-3 space-y-3">
                     {pollingList.map((loc, i) => (
-                      <div key={i} className="rounded-2xl bg-slate-50 px-4 py-3">
+                      <div key={i} className="rounded-[1.5rem] bg-slate-50 px-4 py-3">
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <p className="text-sm font-semibold text-slate-900">{loc.name}</p>
@@ -565,7 +584,7 @@ export default function VotingAssistantHomepage({
                               <p className="mt-1 text-xs text-slate-400 italic">{loc.notes}</p>
                             )}
                           </div>
-                          <span className="shrink-0 rounded-xl bg-blue-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-blue-600">
+                          <span className="shrink-0 rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                             {loc.kind === "drop_off" ? "Drop-off" : loc.kind === "early_vote" ? "Early vote" : "Polls"}
                           </span>
                         </div>
@@ -682,10 +701,10 @@ export default function VotingAssistantHomepage({
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-2xl">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-2xl">
                     {feature.icon}
                   </div>
                   <div>
@@ -699,26 +718,26 @@ export default function VotingAssistantHomepage({
             ))}
           </div>
 
-          <div className="mt-6 rounded-3xl bg-emerald-50 p-5 ring-1 ring-emerald-100">
+          <div className="mt-6 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-emerald-700">Impact mode</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Impact mode</p>
                 <h4 className="mt-1 text-lg font-semibold text-slate-900" style={headingFontStyle}>
                   Explore what matters to your community
                 </h4>
-                <p className="mt-2 text-sm leading-6 text-slate-700">
+                <p className="mt-2 text-sm leading-6 text-slate-500">
                   View ballot measures through lenses like students, renters, families, and public
                   transit users.
                 </p>
               </div>
-              <div className="rounded-2xl bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">
+              <div className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
                 New
               </div>
             </div>
             <button
               type="button"
               onClick={onOpenExplore}
-              className="mt-4 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.01]"
+              className="mt-4 rounded-[1.5rem] bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
               Ask about your ballot
             </button>
@@ -726,7 +745,7 @@ export default function VotingAssistantHomepage({
         </div>
 
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
-          <nav className="pointer-events-auto mx-auto max-w-md border-t border-slate-100 bg-white">
+          <nav className="pointer-events-auto mx-auto max-w-md border-t border-slate-100 bg-white/95 backdrop-blur">
           <div className="mx-auto flex h-[4.5rem] max-w-md items-center justify-around">
           <button
             type="button"
