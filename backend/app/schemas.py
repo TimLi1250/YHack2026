@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -230,6 +230,9 @@ class BallotItemRecord(BaseModel):
     no_means: str | None = None
     effect_on_user: str | None = None
     effects_on_groups: list[dict[str, str]] = Field(default_factory=list)
+    vernacular_summary: str | None = None
+    uncertainties: list[str] = Field(default_factory=list)
+    cited_source_ids: list[str] = Field(default_factory=list)
     sources: list[dict[str, str]] = Field(default_factory=list)
     created_at: str = ""
 
@@ -263,9 +266,12 @@ class CandidateRecord(BaseModel):
     work_history_summary: str | None = None
     controversy_summary: str | None = None
     controversies: list[dict[str, Any]] = Field(default_factory=list)
+    quoted_statements: list[dict[str, str]] = Field(default_factory=list)
     comparison_summary: str | None = None
     user_effect_summary: str | None = None
     group_effects: list[dict[str, str]] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    cited_source_ids: list[str] = Field(default_factory=list)
     campaign_site: str | None = None
     photo_url: str | None = None
     sources: list[dict[str, str]] = Field(default_factory=list)
@@ -421,3 +427,126 @@ class SourceRecord(BaseModel):
 class ImpactRequest(BaseModel):
     user_id: str | None = None
     perspective: str | None = None  # e.g. "students", "renters", "seniors"
+
+
+# =========================================================
+# AI / Grounded generation schemas
+# =========================================================
+
+
+class SourceCitation(BaseModel):
+    id: str
+    label: str
+    url: str
+    snippet: str | None = None
+
+
+class AIUserContext(BaseModel):
+    user_id: str | None = None
+    name: str | None = None
+    age_range: str | None = None
+    ethnicity: str | None = None
+    interests: list[str] = Field(default_factory=list)
+    salary_range: str | None = None
+    gender: str | None = None
+    state: str | None = None
+    city: str | None = None
+    street_address: str | None = None
+    language_preference: str = "en"
+    derived_traits: list[str] = Field(default_factory=list)
+
+
+class BallotSummaryOutput(BaseModel):
+    plain_summary: str
+    simple_summary: str
+    one_sentence: str
+    vernacular_summary: str | None = None
+    yes_means: str | None = None
+    no_means: str | None = None
+    effect_on_user: str | None = None
+    effects_on_groups: list[dict[str, str]] = Field(default_factory=list)
+    election_type: str | None = None
+    election_level: str | None = None
+    uncertainties: list[str] = Field(default_factory=list)
+    cited_source_ids: list[str] = Field(default_factory=list)
+
+
+class CandidateProfileOutput(BaseModel):
+    bio_summary: str
+    positions: dict[str, str] = Field(default_factory=dict)
+    work_history_summary: str
+    controversy_summary: str
+    controversies: list[dict[str, Any]] = Field(default_factory=list)
+    quoted_statements: list[dict[str, str]] = Field(default_factory=list)
+    user_effect_summary: str
+    group_effects: list[dict[str, str]] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    cited_source_ids: list[str] = Field(default_factory=list)
+
+
+class CandidateComparisonOutput(BaseModel):
+    comparison_summary: str
+    issue_comparisons: list[dict[str, Any]] = Field(default_factory=list)
+    key_differences: list[str] = Field(default_factory=list)
+    key_similarities: list[str] = Field(default_factory=list)
+    cited_source_ids: list[str] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+
+
+class LegislationSummaryOutput(BaseModel):
+    plain_summary: str
+    vernacular_summary: str | None = None
+    effect_on_user: str | None = None
+    effects_on_groups: list[dict[str, str]] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+
+
+class MeetingSummaryOutput(BaseModel):
+    summary: str
+    vernacular_summary: str | None = None
+    effect_on_user: str | None = None
+    effects_on_groups: list[dict[str, str]] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+
+
+class AIChatRequest(BaseModel):
+    message: str
+    user_id: str | None = None
+    language_preference: str | None = None
+    profile_context: AIUserContext | None = None
+    conversation: list[dict[str, str]] = Field(default_factory=list)
+
+
+class AIChatResponse(BaseModel):
+    answer: str
+    language: str = "en"
+    follow_up_questions: list[str] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    citations: list[SourceCitation] = Field(default_factory=list)
+
+
+FactCheckVerdict = Literal["supported", "contradicted", "mixed", "not_enough_evidence"]
+
+
+class FactCheckEvidence(BaseModel):
+    finding: str
+    source_id: str
+
+
+class AIFactCheckRequest(BaseModel):
+    claim: str
+    user_id: str | None = None
+    language_preference: str | None = None
+    profile_context: AIUserContext | None = None
+
+
+class AIFactCheckResponse(BaseModel):
+    claim: str
+    verdict: FactCheckVerdict = "not_enough_evidence"
+    summary: str
+    evidence_for: list[FactCheckEvidence] = Field(default_factory=list)
+    evidence_against: list[FactCheckEvidence] = Field(default_factory=list)
+    cited_source_ids: list[str] = Field(default_factory=list)
+    citations: list[SourceCitation] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    language: str = "en"

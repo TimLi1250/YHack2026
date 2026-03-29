@@ -9,9 +9,10 @@ from uuid import uuid4
 import httpx
 
 from app.config import BALLOTS_FILE, GOOGLE_CIVIC_API_KEY
+from app.schemas import AIUserContext, SourceCitation
 from app.services.geocode_service import get_civic_address, normalize_city, normalize_state
-from app.services.llm_service import summarize_ballot_text
-from app.services.source_service import add_source
+from app.services.llm_service import summarize_ballot_record
+from app.services.source_service import add_source, get_sources_for_entity
 from app.services.user_service import get_user
 from app.storage import find_by_id, load_json, save_json
 from app.utils import now_iso
@@ -374,32 +375,52 @@ async def summarize_ballot(
         return {"error": "Ballot item not found"}
 
     # Get user traits for personalized explanation
-    user_traits: list[str] = []
+    user_context: AIUserContext | None = None
     if user_id:
         try:
             user = get_user(user_id)
-            user_traits = user.get("derived_traits", [])
+            user_context = AIUserContext(
+                user_id=user.get("id"),
+                name=user.get("name"),
+                age_range=user.get("age_range"),
+                ethnicity=user.get("ethnicity"),
+                interests=user.get("interests", []),
+                salary_range=user.get("salary_range"),
+                gender=user.get("gender"),
+                state=user.get("state"),
+                city=user.get("city"),
+                street_address=user.get("street_address"),
+                language_preference=user.get("language_preference", "en"),
+                derived_traits=user.get("derived_traits", []),
+            )
         except Exception:
             pass
 
-    # Call LLM
-    summary = await summarize_ballot_text(
-        ballot_text=ballot.get("ballot_text", ""),
-        title=ballot.get("title", ""),
-        user_traits=user_traits or None,
+    sources = [
+        SourceCitation.model_validate(source)
+        for source in get_sources_for_entity("ballot", ballot_id)
+    ]
+
+    summary = await summarize_ballot_record(
+        ballot_record=ballot,
+        user_context=user_context,
+        sources=sources,
     )
 
-    # Merge summary fields into the ballot record
-    if isinstance(summary, dict) and "raw_response" not in summary:
-        ballot["plain_summary"] = summary.get("plain_summary")
-        ballot["simple_summary"] = summary.get("simple_summary")
-        ballot["one_sentence"] = summary.get("one_sentence")
-        ballot["yes_means"] = summary.get("yes_means")
-        ballot["no_means"] = summary.get("no_means")
-        ballot["effect_on_user"] = summary.get("effect_on_user")
-        ballot["effects_on_groups"] = summary.get("effects_on_groups", [])
-        ballots[ballot_idx] = ballot
-        save_json(BALLOTS_FILE, ballots)
+    ballot["plain_summary"] = summary.plain_summary
+    ballot["simple_summary"] = summary.simple_summary
+    ballot["one_sentence"] = summary.one_sentence
+    ballot["vernacular_summary"] = summary.vernacular_summary
+    ballot["yes_means"] = summary.yes_means
+    ballot["no_means"] = summary.no_means
+    ballot["effect_on_user"] = summary.effect_on_user
+    ballot["effects_on_groups"] = summary.effects_on_groups
+    ballot["election_type"] = summary.election_type or ballot.get("election_type", "")
+    ballot["election_level"] = summary.election_level or ballot.get("election_level", "")
+    ballot["uncertainties"] = summary.uncertainties
+    ballot["cited_source_ids"] = summary.cited_source_ids
+    ballots[ballot_idx] = ballot
+    save_json(BALLOTS_FILE, ballots)
 
     return ballot
 

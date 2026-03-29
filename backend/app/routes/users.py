@@ -11,8 +11,8 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.post("")
-def create_user_endpoint(payload: UserCreate) -> dict[str, Any]:
-    return create_user(payload)
+async def create_user_endpoint(payload: UserCreate) -> dict[str, Any]:
+    return await create_user(payload)
 
 
 @router.get("")
@@ -26,5 +26,5 @@ def get_user_endpoint(user_id: str) -> dict[str, Any]:
 
 
 @router.patch("/{user_id}")
-def update_user_endpoint(user_id: str, payload: UserUpdate) -> dict[str, Any]:
-    return update_user(user_id, payload)
+async def update_user_endpoint(user_id: str, payload: UserUpdate) -> dict[str, Any]:
+    return await update_user(user_id, payload)

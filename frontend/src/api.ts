@@ -135,6 +135,57 @@ export interface PollingLocation {
   sources: { name: string; official: boolean }[];
 }
 
+export interface SourceCitation {
+  id: string;
+  label: string;
+  url: string;
+  snippet?: string | null;
+}
+
+export interface AIProfileContext {
+  name?: string | null;
+  age_range?: string | null;
+  ethnicity?: string | null;
+  interests?: string[];
+  salary_range?: string | null;
+  gender?: string | null;
+  state?: string | null;
+  city?: string | null;
+  street_address?: string | null;
+  language_preference?: string | null;
+}
+
+export interface AIChatResponse {
+  answer: string;
+  language: string;
+  follow_up_questions: string[];
+  uncertainties: string[];
+  citations: SourceCitation[];
+}
+
+export type FactCheckVerdict =
+  | "supported"
+  | "contradicted"
+  | "mixed"
+  | "not_enough_evidence";
+
+export interface FactCheckEvidence {
+  finding: string;
+  source_id: string;
+}
+
+export interface AIFactCheckResponse {
+  claim: string;
+  verdict: FactCheckVerdict;
+  summary: string;
+  evidence_for: FactCheckEvidence[];
+  evidence_against: FactCheckEvidence[];
+  cited_source_ids: string[];
+  citations: SourceCitation[];
+  uncertainties: string[];
+  language: string;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -271,4 +322,30 @@ export const pollingLocations = {
     const qs = new URLSearchParams({ state, city, street_address: streetAddress });
     return request<PollingLocation[]>(`/polling/nearest?${qs.toString()}`);
   },
+};
+
+// ─── AI ──────────────────────────────────────────────────────────────
+
+export const ai = {
+  chat: (data: {
+    message: string;
+    user_id?: string;
+    language_preference?: string;
+    profile_context?: AIProfileContext;
+    conversation?: { role: string; text: string }[];
+  }) =>
+    request<AIChatResponse>("/ai/chat", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  factCheck: (data: {
+    claim: string;
+    user_id?: string;
+    language_preference?: string;
+    profile_context?: AIProfileContext;
+  }) =>
+    request<AIFactCheckResponse>("/ai/fact-check", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
