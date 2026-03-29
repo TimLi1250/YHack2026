@@ -1,4 +1,5 @@
-import { useState, type KeyboardEvent } from "react";
+import { useState, useEffect, type KeyboardEvent } from "react";
+import { users as usersApi, type UserRecord } from "./api";
 
 type ProfilePageProps = {
   profile: UserProfile;
@@ -19,6 +20,7 @@ export type UserProfile = {
   gender: string;
   state: string;
   city: string;
+  street_address: string;
   language_preference: string;
 };
 
@@ -86,6 +88,82 @@ export default function ProfilePage({
   onOpenHome,
 }: ProfilePageProps) {
   const [interestDraft, setInterestDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState("");
+  const [userId, setUserId] = useState<string | undefined>(profile.id);
+
+  // Hydrate from backend on mount
+  useEffect(() => {
+    usersApi.list().then((list: UserRecord[]) => {
+      if (list.length > 0) {
+        const u = list[0];
+        setUserId(u.id);
+        onChange({
+          id: u.id,
+          name: u.name ?? "",
+          age_range: u.age_range ?? "",
+          ethnicity: u.ethnicity ?? "",
+          interests: u.interests ?? [],
+          salary_range: u.salary_range ?? "",
+          gender: u.gender ?? "",
+          state: u.state ?? "",
+          city: u.city ?? "",
+          street_address: u.street_address ?? "",
+          language_preference: u.language_preference ?? "en",
+        });
+      }
+    }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function saveProfile() {
+    setSaving(true);
+    setStatus("");
+    try {
+      let updated: UserRecord;
+      if (userId) {
+        updated = await usersApi.update(userId, {
+          name: profile.name || undefined,
+          age_range: profile.age_range || undefined,
+          ethnicity: profile.ethnicity || undefined,
+          interests: profile.interests,
+          salary_range: profile.salary_range || undefined,
+          gender: profile.gender || undefined,
+          state: profile.state,
+          city: profile.city,
+          street_address: profile.street_address || undefined,
+          language_preference: profile.language_preference,
+        });
+      } else {
+        if (!profile.state || !profile.city) {
+          setStatus("City and state are required.");
+          setSaving(false);
+          return;
+        }
+        updated = await usersApi.create(profile);
+        setUserId(updated.id);
+      }
+      onChange({
+        id: updated.id,
+        name: updated.name ?? "",
+        age_range: updated.age_range ?? "",
+        ethnicity: updated.ethnicity ?? "",
+        interests: updated.interests ?? [],
+        salary_range: updated.salary_range ?? "",
+        gender: updated.gender ?? "",
+        state: updated.state ?? "",
+        city: updated.city ?? "",
+        street_address: updated.street_address ?? "",
+        language_preference: updated.language_preference ?? "en",
+      });
+      setStatus("Profile saved!");
+      setTimeout(() => { setStatus(""); onOpenHome(); }, 1200);
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Error saving profile.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const updateField = (field: keyof UserProfile, value: string | string[]) => {
     onChange({
@@ -305,6 +383,19 @@ export default function ProfilePage({
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-300 focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
                 />
               </label>
+
+              <label className="space-y-1.5">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Street Address
+                </span>
+                <input
+                  type="text"
+                  value={profile.street_address}
+                  onChange={(event) => updateField("street_address", event.target.value)}
+                  placeholder="e.g. 123 Main St — needed for polling locations"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-900 transition-all placeholder:text-slate-300 focus:border-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/5"
+                />
+              </label>
             </div>
           </section>
 
@@ -372,7 +463,14 @@ export default function ProfilePage({
             </div>
           </section>
 
-          <div className="flex flex-col items-center justify-between gap-6 border-t border-slate-100 pt-8">
+        <div className="flex flex-col items-center justify-between gap-6 border-t border-slate-100 pt-8">
+            {status && (
+              <div className={`w-full rounded-xl px-4 py-3 text-sm font-medium ${
+                status === "Profile saved!"
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "bg-red-50 text-red-700"
+              }`}>{status}</div>
+            )}
             <button
               type="button"
               onClick={() =>
@@ -386,6 +484,7 @@ export default function ProfilePage({
                   gender: "",
                   state: "",
                   city: "",
+                  street_address: "",
                   language_preference: profile.language_preference || "en",
                 })
               }
@@ -397,9 +496,11 @@ export default function ProfilePage({
             <div className="w-full">
               <button
                 type="button"
-                className="w-full rounded-xl bg-[#0F172A] px-8 py-4 text-sm font-bold tracking-tight text-white shadow-lg shadow-slate-200 transition-all hover:bg-slate-800 active:scale-[0.98]"
+                onClick={() => void saveProfile()}
+                disabled={saving}
+                className="w-full rounded-xl bg-[#0F172A] px-8 py-4 text-sm font-bold tracking-tight text-white shadow-lg shadow-slate-200 transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-50"
               >
-                Save Profile & Continue
+                {saving ? "Saving\u2026" : "Save Profile & Continue"}
               </button>
             </div>
           </div>

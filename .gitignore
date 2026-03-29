@@ -8,3 +8,4 @@ backend/app/services/__pycache__
 .env
 __pycache__/
 *.pyc
+backend/app/data

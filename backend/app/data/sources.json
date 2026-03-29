@@ -218,5 +218,245 @@
     "snippet": null,
     "retrieved_at": "2026-03-29T09:24:53.094625+00:00",
     "trust_tier": "unverified"
+  },
+  {
+    "id": "src_dc391cf3c36f",
+    "entity_type": "ballot",
+    "entity_id": "ballot_68c6abebda67",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:20:32.214217+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_3ffbe31283fb",
+    "entity_type": "ballot",
+    "entity_id": "ballot_9de81085885d",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:25:10.117252+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_cd57dba42291",
+    "entity_type": "ballot",
+    "entity_id": "ballot_61d180b59a9c",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:26:46.624893+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_c07662af055d",
+    "entity_type": "ballot",
+    "entity_id": "ballot_c0fe12144216",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:28:12.454036+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_29cea02fb9dc",
+    "entity_type": "ballot",
+    "entity_id": "ballot_387cfb5c899e",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:28:23.602708+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_7447b1e44c3a",
+    "entity_type": "ballot",
+    "entity_id": "ballot_8465972e38c0",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:37:11.142320+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_37f15d696fdf",
+    "entity_type": "ballot",
+    "entity_id": "ballot_6ef9c80deb23",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:43:50.572278+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_066076fdea3c",
+    "entity_type": "ballot",
+    "entity_id": "ballot_92bfdf119497",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:45:05.298749+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_38ae12bcfcec",
+    "entity_type": "ballot",
+    "entity_id": "ballot_57f0230b5c64",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:45:06.587228+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_74debd536db0",
+    "entity_type": "ballot",
+    "entity_id": "ballot_b19f914f5978",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:47:15.194885+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_3a82f74d6044",
+    "entity_type": "ballot",
+    "entity_id": "ballot_4192a6689aeb",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:47:16.192624+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_4cb96095bf15",
+    "entity_type": "ballot",
+    "entity_id": "ballot_b3f6ccd8ec19",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:47:17.225091+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_5b93d4cffc02",
+    "entity_type": "ballot",
+    "entity_id": "ballot_6b061ef75dec",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T10:54:54.422774+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_1ac82c28a812",
+    "entity_type": "ballot",
+    "entity_id": "ballot_1b2ef4fd4e0d",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:01:44.662805+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_ee58c1c6abec",
+    "entity_type": "ballot",
+    "entity_id": "ballot_14e801e366e1",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:08:40.473150+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_d41d2e4e075f",
+    "entity_type": "ballot",
+    "entity_id": "ballot_49b0cc3bb560",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:13:20.133378+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_3ef0a2ab8db2",
+    "entity_type": "ballot",
+    "entity_id": "ballot_741cecd92992",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:13:41.387857+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_35b8459494fa",
+    "entity_type": "ballot",
+    "entity_id": "ballot_04eb64933493",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:13:59.176133+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_e4205b622696",
+    "entity_type": "ballot",
+    "entity_id": "ballot_bf3c194b7661",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:16:56.318051+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_3cae6799669a",
+    "entity_type": "ballot",
+    "entity_id": "ballot_680c8602955b",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:17:24.137865+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_9215d2c78443",
+    "entity_type": "ballot",
+    "entity_id": "ballot_0fbd67e7204f",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:19:58.043236+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_3cadf222c14c",
+    "entity_type": "ballot",
+    "entity_id": "ballot_c61602fa286d",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:20:04.226801+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_1b9d58d9f6a9",
+    "entity_type": "ballot",
+    "entity_id": "ballot_ba7881fa62b4",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:20:46.587449+00:00",
+    "trust_tier": "unverified"
+  },
+  {
+    "id": "src_de5082343168",
+    "entity_type": "ballot",
+    "entity_id": "ballot_1a3af74b7178",
+    "label": "Google Civic Info API",
+    "url": "https://www.googleapis.com/civicinfo/v2/voterinfo",
+    "snippet": null,
+    "retrieved_at": "2026-03-29T11:21:32.375619+00:00",
+    "trust_tier": "unverified"
   }
 ]

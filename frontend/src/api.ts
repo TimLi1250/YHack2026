@@ -122,6 +122,19 @@ export interface NotificationRecord {
   created_at?: string;
 }
 
+export interface PollingLocation {
+  kind: "polling" | "drop_off" | "early_vote";
+  name: string;
+  address: string;
+  line1: string;
+  city: string;
+  state: string;
+  zip: string;
+  polling_hours: string;
+  notes: string;
+  sources: { name: string; official: boolean }[];
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -249,4 +262,13 @@ export const notifications = {
       `/notifications/check-deadlines?user_id=${userId}`,
       { method: "POST" },
     ),
+};
+
+// ─── Polling Locations ───────────────────────────────────────────────
+
+export const pollingLocations = {
+  nearest: (state: string, city: string, streetAddress: string) => {
+    const qs = new URLSearchParams({ state, city, street_address: streetAddress });
+    return request<PollingLocation[]>(`/polling/nearest?${qs.toString()}`);
+  },
 };

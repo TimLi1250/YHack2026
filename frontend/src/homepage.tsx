@@ -7,6 +7,7 @@ import {
   legislation as legislationApi,
   meetings as meetingsApi,
   notifications as notificationsApi,
+  pollingLocations as pollingApi,
   type UserRecord,
   type BallotItem,
   type CandidateRecord,
@@ -14,6 +15,7 @@ import {
   type LegislationRecord,
   type MeetingRecord,
   type NotificationRecord,
+  type PollingLocation,
 } from "./api";
 
 /* ─── dropdown options (match backend schemas.py) ──────────────────── */
@@ -162,6 +164,9 @@ export default function VotingAssistantHomepage({
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateRecord | null>(null);
   const [selectedLegislation, setSelectedLegislation] = useState<LegislationRecord | null>(null);
   const [selectedMeeting, setSelectedMeeting] = useState<MeetingRecord | null>(null);
+  const [pollingList, setPollingList] = useState<PollingLocation[] | null>(null);
+  const [pollingLoading, setPollingLoading] = useState(false);
+  const [pollingError, setPollingError] = useState<string | null>(null);
 
   const hasLocation = !!(user?.state && user?.city);
 
@@ -200,6 +205,24 @@ export default function VotingAssistantHomepage({
     setBallotItems(b.status === "fulfilled" ? b.value : []);
     setCandidatesList(c.status === "fulfilled" ? c.value : []);
     setNotificationsList(n.status === "fulfilled" ? n.value : []);
+
+    // Fetch polling locations only when a street address is present
+    if (u.street_address?.trim()) {
+      setPollingLoading(true);
+      setPollingError(null);
+      try {
+        const locs = await pollingApi.nearest(u.state, u.city, u.street_address);
+        setPollingList(locs);
+      } catch (err) {
+        setPollingError(err instanceof Error ? err.message : "Could not load polling locations.");
+        setPollingList([]);
+      } finally {
+        setPollingLoading(false);
+      }
+    } else {
+      setPollingList(null); // null = "not attempted" (no street address)
+      setPollingError(null);
+    }
   }, []);
 
   const fetchGlobalData = useCallback(async () => {
@@ -215,7 +238,7 @@ export default function VotingAssistantHomepage({
 
   useEffect(() => {
     if (user && hasLocation) void fetchLocationData(user);
-  }, [user?.id, hasLocation, fetchLocationData]);
+  }, [user?.id, hasLocation, user?.street_address, fetchLocationData]);
 
   useEffect(() => { void fetchGlobalData(); }, [fetchGlobalData]);
 
@@ -259,7 +282,6 @@ export default function VotingAssistantHomepage({
       setUser(updated);
       setForm(mapUserToForm(updated));
       setStatusMessage("Profile saved successfully.");
-      // re-fetch location data
       setBallotItems(null); setCandidatesList(null); setNotificationsList(null);
       void fetchLocationData(updated);
     } catch (err) {
@@ -495,6 +517,62 @@ export default function VotingAssistantHomepage({
                 <p className="mt-2 text-sm leading-6 text-slate-700">
                   View ballot measures through lenses like students, renters, families, and public transit users.
                 </p>
+              </div>
+
+              {/* Polling Location card */}
+              <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Your polling location</p>
+                  <span className="text-lg">🗳️</span>
+                </div>
+
+                {!hasLocation ? (
+                  <div className="mt-3 flex items-start gap-2 rounded-2xl bg-amber-50 px-4 py-3 ring-1 ring-amber-200">
+                    <span className="text-base">⚠️</span>
+                    <p className="text-sm text-amber-800">Set your city and state in your profile to find polling locations.</p>
+                  </div>
+                ) : !user?.street_address?.trim() ? (
+                  <div className="mt-3 flex items-start gap-2 rounded-2xl bg-amber-50 px-4 py-3 ring-1 ring-amber-200">
+                    <span className="text-base">⚠️</span>
+                    <div>
+                      <p className="text-sm font-semibold text-amber-800">Street address required</p>
+                      <p className="mt-0.5 text-xs text-amber-700">
+                        Add your street address in your profile to find your nearest polling place.
+                      </p>
+                    </div>
+                  </div>
+                ) : pollingLoading ? (
+                  <div className="mt-3"><Skeleton lines={3} /></div>
+                ) : pollingError ? (
+                  <div className="mt-3 flex items-start gap-2 rounded-2xl bg-red-50 px-4 py-3 ring-1 ring-red-200">
+                    <span className="text-base">❌</span>
+                    <p className="text-sm text-red-700">{pollingError}</p>
+                  </div>
+                ) : pollingList === null || pollingList.length === 0 ? (
+                  <PlaceholderCard icon="📍" title="No polling locations found" subtitle="No polling data is available for your address yet. Check back closer to the election." />
+                ) : (
+                  <div className="mt-3 space-y-3">
+                    {pollingList.map((loc, i) => (
+                      <div key={i} className="rounded-2xl bg-slate-50 px-4 py-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900">{loc.name}</p>
+                            <p className="mt-0.5 text-xs text-slate-500">{loc.address}</p>
+                            {loc.polling_hours && (
+                              <p className="mt-1 text-xs text-slate-500 whitespace-pre-line">🕒 {loc.polling_hours}</p>
+                            )}
+                            {loc.notes && (
+                              <p className="mt-1 text-xs text-slate-400 italic">{loc.notes}</p>
+                            )}
+                          </div>
+                          <span className="shrink-0 rounded-xl bg-blue-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-blue-600">
+                            {loc.kind === "drop_off" ? "Drop-off" : loc.kind === "early_vote" ? "Early vote" : "Polls"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}
