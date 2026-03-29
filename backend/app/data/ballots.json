@@ -1,6 +1,6 @@
 [
   {
-    "id": "ballot_d7a29dc62ab3",
+    "id": "ballot_91c21cef4aac",
     "election_id": "election_11201",
     "election_name": "Virginia Special Election",
     "election_date": "2026-04-21",
@@ -31,7 +31,7 @@
     "no_means": null,
     "effect_on_user": null,
     "effects_on_groups": [],
-    "fetched_at": "2026-03-29T11:50:20.997363+00:00",
-    "created_at": "2026-03-29T11:50:21.268306+00:00"
+    "fetched_at": "2026-03-29T11:34:11.429681+00:00",
+    "created_at": "2026-03-29T11:34:12.434357+00:00"
   }
 ]

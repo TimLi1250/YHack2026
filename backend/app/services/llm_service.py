@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 from typing import Any, TypeVar
 
 import httpx
@@ -73,6 +74,15 @@ Answer the user's substantive question directly. If they ask about a person's po
 Return only valid JSON that matches the requested schema.
 """.strip()
 
+SYSTEM_CIVIC_FACTCHECK_WEB = """
+You are a neutral civic fact-checking assistant.
+First prefer the provided civic records and source packet when they directly establish the claim.
+If they do not, use Google Search grounding from this model call to find reputable public web sources.
+Never recommend how to vote. Never persuade. Never invent facts.
+For web-grounded answers, mention sources directly in the summary using phrasing like "From <source>: ...".
+Return only valid JSON that matches the requested schema.
+""".strip()
+
 
 def _normalize_language(language_preference: str | None) -> str:
     return (language_preference or "en").strip().lower() or "en"
@@ -120,15 +130,40 @@ def _source_map(sources: list[SourceCitation]) -> dict[str, SourceCitation]:
     return {source.id: source for source in sources}
 
 
+def _normalize_source_ref(value: str) -> str:
+    return value.strip().rstrip("/").lower()
+
+
+def _resolve_source_reference(
+    source_ref: str,
+    sources: list[SourceCitation],
+) -> SourceCitation | None:
+    if not source_ref:
+        return None
+
+    source_by_id = _source_map(sources)
+    if source_ref in source_by_id:
+        return source_by_id[source_ref]
+
+    normalized_ref = _normalize_source_ref(source_ref)
+    for source in sources:
+        if source.url and _normalize_source_ref(source.url) == normalized_ref:
+            return source
+        if _normalize_source_ref(source.label) == normalized_ref:
+            return source
+
+    return None
+
+
 def _sanitize_source_ids(source_ids: list[str], sources: list[SourceCitation]) -> list[str]:
-    allowed_ids = _source_map(sources)
     seen: set[str] = set()
     result: list[str] = []
     for source_id in source_ids:
-        if source_id not in allowed_ids or source_id in seen:
+        matched = _resolve_source_reference(source_id, sources)
+        if not matched or matched.id in seen:
             continue
-        seen.add(source_id)
-        result.append(source_id)
+        seen.add(matched.id)
+        result.append(matched.id)
     return result
 
 
@@ -145,6 +180,8 @@ def _sanitize_citations(
         matched = source_by_id.get(citation.id)
         if not matched and citation.url:
             matched = source_by_url.get(citation.url)
+        if not matched and citation.label:
+            matched = _resolve_source_reference(citation.label, sources)
         if not matched or matched.id in seen:
             continue
         seen.add(matched.id)
@@ -157,13 +194,13 @@ def _sanitize_fact_check_evidence(
     evidence: list[FactCheckEvidence],
     sources: list[SourceCitation],
 ) -> list[FactCheckEvidence]:
-    allowed_ids = _source_map(sources)
     sanitized: list[FactCheckEvidence] = []
     for item in evidence:
         finding = item.finding.strip()
-        if not finding or item.source_id not in allowed_ids:
+        matched = _resolve_source_reference(item.source_id, sources)
+        if not finding or not matched:
             continue
-        sanitized.append(FactCheckEvidence(finding=finding, source_id=item.source_id))
+        sanitized.append(FactCheckEvidence(finding=finding, source_id=matched.id))
     return sanitized
 
 
@@ -295,6 +332,79 @@ async def call_llm_structured(
         raise
     except Exception as exc:
         logger.exception("Structured Gemini call failed: %s", exc)
+        raise
+
+
+def _grounding_web_citations(response: Any) -> list[SourceCitation]:
+    candidates = getattr(response, "candidates", None) or []
+    if not candidates:
+        return []
+
+    grounding_metadata = getattr(candidates[0], "groundingMetadata", None)
+    grounding_chunks = getattr(grounding_metadata, "groundingChunks", None) or []
+
+    citations: list[SourceCitation] = []
+    seen_urls: set[str] = set()
+    for index, chunk in enumerate(grounding_chunks):
+        web = getattr(chunk, "web", None)
+        uri = getattr(web, "uri", None) if web else None
+        if not uri or uri in seen_urls:
+            continue
+        seen_urls.add(uri)
+        title = getattr(web, "title", None) or getattr(web, "domain", None) or "Web source"
+        citations.append(
+            SourceCitation(
+                id=f"src_web_factcheck_{index}",
+                label=title,
+                url=uri,
+                snippet=f"From {title}.",
+            )
+        )
+    return citations
+
+
+async def call_llm_structured_with_google_search(
+    system_prompt: str,
+    user_prompt: str,
+    response_model: type[T],
+) -> tuple[T, list[SourceCitation]]:
+    if not GEMINI_API_KEY:
+        raise RuntimeError("GEMINI_API_KEY not configured")
+    if not genai or not genai_types:
+        raise RuntimeError("google-genai SDK not installed")
+
+    client = genai.Client(api_key=GEMINI_API_KEY)
+
+    def _run() -> tuple[T, list[SourceCitation]]:
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=user_prompt,
+            config=genai_types.GenerateContentConfig(
+                systemInstruction=system_prompt,
+                temperature=LLM_TEMPERATURE,
+                maxOutputTokens=LLM_MAX_TOKENS,
+                responseMimeType="application/json",
+                responseSchema=response_model,
+                tools=[genai_types.Tool(googleSearch=genai_types.GoogleSearch())],
+            ),
+        )
+        parsed = getattr(response, "parsed", None)
+        if parsed is not None:
+            if isinstance(parsed, response_model):
+                result = parsed
+            else:
+                result = response_model.model_validate(parsed)
+        else:
+            text = getattr(response, "text", "") or ""
+            result = response_model.model_validate_json(text)
+        return result, _grounding_web_citations(response)
+
+    try:
+        return await asyncio.to_thread(_run)
+    except ValidationError:
+        raise
+    except Exception as exc:
+        logger.exception("Google Search-grounded Gemini call failed: %s", exc)
         raise
 
 
@@ -740,6 +850,78 @@ Rules:
     )
 
 
+async def web_grounded_fact_check(
+    claim: str,
+    user_context: AIUserContext | None,
+    source_packet: list[dict[str, Any]],
+    sources: list[SourceCitation],
+) -> AIFactCheckResponse:
+    language = _normalize_language(user_context.language_preference if user_context else None)
+    prompt = f"""
+Task: fact-check a civic claim. Prefer the provided civic records first. If they are insufficient, use Google Search grounding from this model call.
+
+Language for output: {language}
+
+User context:
+{_format_user_context(user_context)}
+
+Claim:
+{claim}
+
+Retrieved civic records:
+{json.dumps(source_packet, indent=2, ensure_ascii=False)}
+
+Source packet:
+{_format_sources(sources)}
+
+Return:
+- claim
+- verdict
+- summary
+- evidence_for
+- evidence_against
+- cited_source_ids
+- uncertainties
+- language
+
+Rules:
+- Check the local retrieved records first.
+- If the local packet is insufficient, use the web-grounded results from this model call.
+- Valid verdicts are: supported, contradicted, mixed, not_enough_evidence.
+- For local packet evidence, use the exact source id from the provided source packet.
+- For web-grounded evidence, source_id may be the exact source title or exact source URL shown by the web-grounded results.
+- In the summary, name the supporting or contradicting sources directly using phrasing like "From <source>: ...".
+- Never invent sources, quotes, dates, or vote recommendations.
+""".strip()
+
+    response, web_citations = await call_llm_structured_with_google_search(
+        SYSTEM_CIVIC_FACTCHECK_WEB,
+        prompt,
+        AIFactCheckResponse,
+    )
+
+    combined_sources = list(sources)
+    existing_urls = {_normalize_source_ref(source.url) for source in combined_sources if source.url}
+    existing_labels = {_normalize_source_ref(source.label) for source in combined_sources}
+    for citation in web_citations:
+        normalized_url = _normalize_source_ref(citation.url)
+        normalized_label = _normalize_source_ref(citation.label)
+        if normalized_url in existing_urls or normalized_label in existing_labels:
+            continue
+        combined_sources.append(citation)
+        existing_urls.add(normalized_url)
+        existing_labels.add(normalized_label)
+
+    finalized = _finalize_fact_check_response(response, claim, language, combined_sources)
+    finalized.uncertainties = _dedupe_strings(
+        [
+            *finalized.uncertainties,
+            "The local source packet did not directly establish this claim, so a web-grounded Gemini fallback was used.",
+        ]
+    )
+    return finalized
+
+
 async def grounded_fact_check(
     claim: str,
     user_context: AIUserContext | None,
@@ -785,6 +967,20 @@ Rules:
 
     try:
         response = await call_llm_structured(SYSTEM_CIVIC_GROUNDED, prompt, AIFactCheckResponse)
-        return _finalize_fact_check_response(response, claim, language, sources)
+        finalized = _finalize_fact_check_response(response, claim, language, sources)
+        if finalized.verdict != "not_enough_evidence":
+            return finalized
     except Exception:
+        finalized = None
+
+    try:
+        return await web_grounded_fact_check(
+            claim=claim,
+            user_context=user_context,
+            source_packet=source_packet,
+            sources=sources,
+        )
+    except Exception:
+        if finalized is not None:
+            return finalized
         return _fallback_fact_check_response(claim, language, sources)

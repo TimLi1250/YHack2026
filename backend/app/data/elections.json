@@ -14,7 +14,7 @@
       }
     ],
     "created_at": "2026-03-29T11:19:07.987963+00:00",
-    "fetched_at": "2026-03-29T11:50:21.293689+00:00"
+    "fetched_at": "2026-03-29T11:34:12.450379+00:00"
   },
   {
     "id": "election_9473",
@@ -30,8 +30,7 @@
         "url": "https://www.googleapis.com/civicinfo/v2/elections"
       }
     ],
-    "created_at": "2026-03-29T11:19:07.987990+00:00",
-    "fetched_at": "2026-03-29T11:50:21.293689+00:00"
+    "created_at": "2026-03-29T11:19:07.987990+00:00"
   },
   {
     "id": "election_9514",
@@ -47,8 +46,7 @@
         "url": "https://www.googleapis.com/civicinfo/v2/elections"
       }
     ],
-    "created_at": "2026-03-29T11:19:07.988000+00:00",
-    "fetched_at": "2026-03-29T11:50:21.293689+00:00"
+    "created_at": "2026-03-29T11:19:07.988000+00:00"
   },
   {
     "id": "election_9580",
@@ -64,8 +62,7 @@
         "url": "https://www.googleapis.com/civicinfo/v2/elections"
       }
     ],
-    "created_at": "2026-03-29T11:19:07.988009+00:00",
-    "fetched_at": "2026-03-29T11:50:21.293689+00:00"
+    "created_at": "2026-03-29T11:19:07.988009+00:00"
   },
   {
     "id": "election_11201",
@@ -81,7 +78,6 @@
         "url": "https://www.googleapis.com/civicinfo/v2/elections"
       }
     ],
-    "created_at": "2026-03-29T11:19:07.988017+00:00",
-    "fetched_at": "2026-03-29T11:50:21.293689+00:00"
+    "created_at": "2026-03-29T11:19:07.988017+00:00"
   }
 ]
