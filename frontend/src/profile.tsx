@@ -405,9 +405,6 @@ export default function ProfilePage({
           </div>
         </div>
 
-        <footer className="mb-20 px-2 py-10 text-center text-[10px] text-slate-300">
-          <p>© 2024 BallotBridge. Your profile shape remains backend-compatible.</p>
-        </footer>
       </main>
 
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
