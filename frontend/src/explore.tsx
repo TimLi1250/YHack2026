@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
 import type { UserProfile } from "./profile";
 
+const headingFontStyle = {
+  fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+};
+
 type ExplorePageProps = {
   profile: UserProfile;
   onOpenProfile: () => void;
@@ -70,13 +74,18 @@ export default function ExplorePage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div
+      className="min-h-screen bg-slate-50 text-slate-900"
+      style={{ fontFamily: "Roboto, sans-serif" }}
+    >
       <div className="mx-auto flex min-h-screen max-w-md flex-col bg-white shadow-2xl">
         <div className="bg-gradient-to-b from-blue-700 via-blue-600 to-cyan-500 px-6 pb-8 pt-8 text-white">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-blue-100">Ballot Q&A</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight">Explore</h1>
+              <h1 className="mt-1 text-3xl font-bold tracking-tight" style={headingFontStyle}>
+                Explore
+              </h1>
             </div>
             <button
               type="button"
@@ -89,7 +98,7 @@ export default function ExplorePage({
 
           <div className="rounded-3xl bg-white/12 p-5 backdrop-blur">
             <p className="text-sm font-medium text-blue-100">Ask us anything about the ballot</p>
-            <h2 className="mt-2 text-2xl font-semibold leading-tight">
+            <h2 className="mt-2 text-2xl font-semibold leading-tight" style={headingFontStyle}>
               A chat-style assistant for voting questions and ballot explanations.
             </h2>
             <p className="mt-3 text-sm leading-6 text-blue-50">
@@ -105,7 +114,7 @@ export default function ExplorePage({
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                   Chat assistant
                 </p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-900">
+                <h3 className="mt-2 text-lg font-semibold text-slate-900" style={headingFontStyle}>
                   Ask a ballot question
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-slate-600">
@@ -176,7 +185,7 @@ export default function ExplorePage({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold text-emerald-700">Better answers start here</p>
-                <h4 className="mt-1 text-lg font-semibold text-slate-900">
+                <h4 className="mt-1 text-lg font-semibold text-slate-900" style={headingFontStyle}>
                   Add your city and state for more relevant ballot guidance
                 </h4>
                 <p className="mt-2 text-sm leading-6 text-slate-700">
@@ -199,40 +208,42 @@ export default function ExplorePage({
         </div>
 
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
-          <div className="pointer-events-auto mx-auto flex w-full max-w-md items-center justify-around border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
+          <nav className="pointer-events-auto mx-auto max-w-md border-t border-slate-100 bg-white">
+          <div className="mx-auto flex h-[4.5rem] max-w-md items-center justify-around">
           <button
             type="button"
             onClick={onOpenHome}
-            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
-            <span className="text-lg">⌂</span>
-            Home
+            <span className="text-xl sm:text-2xl">⌂</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Home</span>
           </button>
           <button
             type="button"
             onClick={onOpenExplore}
-            className="flex flex-col items-center gap-1 text-xs font-semibold text-blue-600"
+            className="flex flex-col items-center gap-1 px-4 py-2 text-[#0F172A]"
           >
-            <span className="text-lg">⌕</span>
-            Explore
+            <span className="text-xl sm:text-2xl">⌕</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Explore</span>
           </button>
           <button
             type="button"
             onClick={onOpenBallot}
-            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
-            <span className="text-lg">☑</span>
-            Ballot
+            <span className="text-xl sm:text-2xl">☑</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Ballot</span>
           </button>
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex flex-col items-center gap-1 text-xs text-slate-500 transition hover:text-blue-600"
+            className="flex flex-col items-center gap-1 px-4 py-2 text-slate-400 transition-colors hover:text-slate-600"
           >
-            <span className="text-lg">◉</span>
-            Profile
+            <span className="text-xl sm:text-2xl">◉</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em]">Profile</span>
           </button>
         </div>
+          </nav>
         </div>
       </div>
     </div>
