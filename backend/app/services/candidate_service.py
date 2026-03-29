@@ -7,7 +7,7 @@ from uuid import uuid4
 import httpx
 
 from app.config import CANDIDATES_FILE, GOOGLE_CIVIC_API_KEY
-from app.services.geocode_service import normalize_city, normalize_state
+from app.services.geocode_service import get_civic_address, normalize_city, normalize_state
 from app.services.llm_service import compare_candidates, summarize_candidate
 from app.services.source_service import add_source
 from app.services.user_service import get_user
@@ -22,31 +22,35 @@ VOTER_INFO_URL = "https://www.googleapis.com/civicinfo/v2/voterinfo"
 async def fetch_candidates_for_location(
     state: str,
     city: str,
+    election_id: str | None = None,
+    street_address: str | None = None,
 ) -> list[dict[str, Any]]:
     """Fetch candidate info from Google Civic Info API."""
     if not GOOGLE_CIVIC_API_KEY:
         logger.warning("GOOGLE_CIVIC_API_KEY not set – returning cached candidates only")
         return []
 
-    address = f"{normalize_city(city)}, {normalize_state(state)}"
+    address = get_civic_address(city, state, street_address)
+    params: dict[str, str] = {"key": GOOGLE_CIVIC_API_KEY, "address": address}
+    if election_id:
+        params["electionId"] = election_id.replace("election_", "")
+
     results: list[dict[str, Any]] = []
 
     try:
         async with httpx.AsyncClient(timeout=30) as client:
-            resp = await client.get(
-                VOTER_INFO_URL,
-                params={"key": GOOGLE_CIVIC_API_KEY, "address": address},
-            )
+            resp = await client.get(VOTER_INFO_URL, params=params)
             resp.raise_for_status()
             data = resp.json()
 
+        eid = election_id or f"election_{data.get('election', {}).get('id', 'unknown')}"
         for contest in data.get("contests", []):
             office = contest.get("office", "")
             for cand in contest.get("candidates", []):
                 candidate = {
                     "id": f"cand_{uuid4().hex[:12]}",
                     "ballot_item_id": None,
-                    "election_id": f"election_{data.get('election', {}).get('id', 'unknown')}",
+                    "election_id": eid,
                     "name": cand.get("name", ""),
                     "office": office,
                     "party": cand.get("party"),
@@ -58,7 +62,7 @@ async def fetch_candidates_for_location(
                 }
                 results.append(candidate)
     except httpx.HTTPError as e:
-        logger.error("Error fetching candidates: %s", e)
+        logger.warning("Error fetching candidates: %s", e)
 
     return results
 
@@ -67,12 +71,34 @@ async def get_candidates(
     state: str | None = None,
     city: str | None = None,
     office: str | None = None,
+    street_address: str | None = None,
 ) -> list[dict[str, Any]]:
     """Return candidates, optionally filtered by location/office."""
+    from app.services.election_service import fetch_all_upcoming_elections
+
     candidates = load_json(CANDIDATES_FILE)
 
     if not candidates and state and city:
-        fetched = await fetch_candidates_for_location(state, city)
+        # Step 1: try without electionId
+        fetched = await fetch_candidates_for_location(state, city, street_address=street_address)
+
+        # Step 2: if that failed, iterate through known election IDs
+        if not fetched:
+            try:
+                elections = await fetch_all_upcoming_elections()
+                for election in elections:
+                    eid = election.get("id")
+                    if not eid:
+                        continue
+                    items = await fetch_candidates_for_location(
+                        state, city, election_id=eid, street_address=street_address
+                    )
+                    if items:
+                        fetched.extend(items)
+                        break
+            except Exception as exc:
+                logger.warning("Could not iterate elections for candidate lookup: %s", exc)
+
         if fetched:
             for c in fetched:
                 candidates.append(c)

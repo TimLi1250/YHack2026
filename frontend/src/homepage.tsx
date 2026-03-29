@@ -3,12 +3,14 @@ import {
   users,
   ballots,
   candidates as candidatesApi,
+  elections as electionsApi,
   legislation as legislationApi,
   meetings as meetingsApi,
   notifications as notificationsApi,
   type UserRecord,
   type BallotItem,
   type CandidateRecord,
+  type ElectionRecord,
   type LegislationRecord,
   type MeetingRecord,
   type NotificationRecord,
@@ -34,7 +36,7 @@ const interestOptions = [
 
 const defaultFormState = {
   name: "", age_range: "", ethnicity: "", interests: [] as string[],
-  salary_range: "", gender: "", state: "", city: "", language_preference: "en",
+  salary_range: "", gender: "", state: "", city: "", street_address: "", language_preference: "en",
 };
 type FormState = typeof defaultFormState;
 type Tab = "home" | "explore" | "ballot" | "profile";
@@ -136,6 +138,7 @@ export default function VotingAssistantHomepage() {
   /* ── data from backend (null = not loaded yet) ────────────────────── */
   const [ballotItems, setBallotItems] = useState<BallotItem[] | null>(null);
   const [candidatesList, setCandidatesList] = useState<CandidateRecord[] | null>(null);
+  const [electionsList, setElectionsList] = useState<ElectionRecord[] | null>(null);
   const [legislationList, setLegislationList] = useState<LegislationRecord[] | null>(null);
   const [meetingsList, setMeetingsList] = useState<MeetingRecord[] | null>(null);
   const [notificationsList, setNotificationsList] = useState<NotificationRecord[] | null>(null);
@@ -170,8 +173,8 @@ export default function VotingAssistantHomepage() {
   const fetchLocationData = useCallback(async (u: UserRecord) => {
     if (!u.state || !u.city) return;
     const [b, c, n] = await Promise.allSettled([
-      ballots.upcoming(u.state, u.city),
-      candidatesApi.list({ state: u.state, city: u.city }),
+      ballots.upcoming(u.state, u.city, u.street_address),
+      candidatesApi.list({ state: u.state, city: u.city, street_address: u.street_address }),
       notificationsApi.forUser(u.id),
     ]);
     setBallotItems(b.status === "fulfilled" ? b.value : []);
@@ -180,12 +183,14 @@ export default function VotingAssistantHomepage() {
   }, []);
 
   const fetchGlobalData = useCallback(async () => {
-    const [l, m] = await Promise.allSettled([
+    const [l, m, e] = await Promise.allSettled([
       legislationApi.search(),
       meetingsApi.congressional(),
+      electionsApi.list({ year: 2026 }),
     ]);
     setLegislationList(l.status === "fulfilled" ? l.value : []);
     setMeetingsList(m.status === "fulfilled" ? m.value : []);
+    setElectionsList(e.status === "fulfilled" ? e.value : []);
   }, []);
 
   useEffect(() => {
@@ -201,6 +206,7 @@ export default function VotingAssistantHomepage() {
       name: u.name ?? "", age_range: u.age_range ?? "", ethnicity: u.ethnicity ?? "",
       interests: u.interests ?? [], salary_range: u.salary_range ?? "",
       gender: u.gender ?? "", state: u.state ?? "", city: u.city ?? "",
+      street_address: u.street_address ?? "",
       language_preference: u.language_preference ?? "en",
     };
   }
@@ -418,6 +424,40 @@ export default function VotingAssistantHomepage() {
                 <QuickStat label="Ballot items" value={ballotItems === null ? "—" : String(ballotItems.length)} loading={ballotItems === null && hasLocation} />
                 <QuickStat label="Candidates" value={candidatesList === null ? "—" : String(candidatesList.length)} loading={candidatesList === null && hasLocation} />
                 <QuickStat label="Bills tracked" value={legislationList === null ? "—" : String(legislationList.length)} loading={legislationList === null} />
+              </div>
+
+              {/* Upcoming 2026 Elections */}
+              <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Upcoming elections in 2026</p>
+                  {electionsList !== null && (
+                    <span className="rounded-2xl bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">
+                      {electionsList.length} election{electionsList.length !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-3 space-y-2">
+                  {electionsList === null ? (
+                    <Skeleton lines={4} />
+                  ) : electionsList.length === 0 ? (
+                    <PlaceholderCard icon="🗓️" title="No elections found" subtitle="No upcoming 2026 elections could be loaded at this time." />
+                  ) : (
+                    electionsList.map((election) => (
+                      <div key={election.id} className="flex items-start gap-3 rounded-2xl bg-slate-50 px-4 py-3">
+                        <span className="text-xl">🗓️</span>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-slate-900">{election.name}</p>
+                          <p className="mt-0.5 text-xs text-slate-500">
+                            {election.election_date
+                              ? new Date(election.election_date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric" })
+                              : "Date TBD"}
+                            {" · "}{election.level}{election.election_type ? ` · ${election.election_type}` : ""}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
 
               {/* Impact mode CTA */}
@@ -703,6 +743,8 @@ export default function VotingAssistantHomepage() {
                       <input name="state" value={form.state} onChange={handleInputChange}
                         className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none" placeholder="State" />
                     </div>
+                    <input name="street_address" value={form.street_address} onChange={handleInputChange}
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none" placeholder="Street address (e.g. 123 Main St) — improves ballot accuracy" />
                   </label>
                 </div>
 

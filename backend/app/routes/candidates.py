@@ -22,9 +22,10 @@ async def list_candidates(
     state: str | None = Query(None),
     city: str | None = Query(None),
     office: str | None = Query(None),
+    street_address: str | None = Query(None, description="Full street address for precise voter lookup"),
 ) -> list[dict[str, Any]]:
     """List candidates, optionally filtered by location/office."""
-    return await get_candidates(state=state, city=city, office=office)
+    return await get_candidates(state=state, city=city, office=office, street_address=street_address)
 
 
 @router.get("/{candidate_id}")

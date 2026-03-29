@@ -20,9 +20,10 @@ router = APIRouter(prefix="/ballots", tags=["ballots"])
 async def upcoming_ballots(
     state: str = Query(..., description="State name or abbreviation"),
     city: str = Query(..., description="City name"),
+    street_address: str | None = Query(None, description="Full street address for precise voter lookup"),
 ) -> list[dict[str, Any]]:
     """Get upcoming ballot items for a state/city."""
-    return await get_upcoming_ballots(state, city)
+    return await get_upcoming_ballots(state, city, street_address=street_address)
 
 
 @router.get("/{ballot_id}")

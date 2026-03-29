@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import date
 from typing import Any
 from uuid import uuid4
 
@@ -102,6 +103,55 @@ async def get_upcoming_elections(state: str, city: str) -> list[dict[str, Any]]:
             matching = fetched
 
     return matching
+
+
+async def fetch_all_upcoming_elections(
+    limit: int | None = None,
+    year: int | None = None,
+) -> list[dict[str, Any]]:
+    """Fetch all upcoming elections globally, sorted by date."""
+    if not GOOGLE_CIVIC_API_KEY:
+        logger.warning("GOOGLE_CIVIC_API_KEY not set – returning cached elections only")
+        elections = load_json(ELECTIONS_FILE)
+    else:
+        elections = []
+        try:
+            async with httpx.AsyncClient(timeout=30) as client:
+                resp = await client.get(
+                    CIVIC_API_URL,
+                    params={"key": GOOGLE_CIVIC_API_KEY},
+                )
+                resp.raise_for_status()
+                data = resp.json()
+            for election in data.get("elections", []):
+                eid = election.get("id", "")
+                if eid == "0":
+                    continue
+                elections.append({
+                    "id": f"election_{eid}",
+                    "name": election.get("name", ""),
+                    "election_date": election.get("electionDay", ""),
+                    "election_type": _infer_election_type(election.get("name", "")),
+                    "level": _infer_election_level(election.get("name", "")),
+                    "sources": [{"label": "Google Civic Info API", "url": CIVIC_API_URL}],
+                    "created_at": now_iso(),
+                })
+        except httpx.HTTPError as e:
+            logger.warning("Error fetching elections from API: %s", e)
+            elections = load_json(ELECTIONS_FILE)
+
+    today = date.today().isoformat()
+    results = [e for e in elections if e.get("election_date", "") >= today]
+
+    if year:
+        results = [e for e in results if e.get("election_date", "").startswith(str(year))]
+
+    results.sort(key=lambda e: e.get("election_date", ""))
+
+    if limit:
+        results = results[:limit]
+
+    return results
 
 
 def get_election_by_id(election_id: str) -> dict[str, Any] | None:

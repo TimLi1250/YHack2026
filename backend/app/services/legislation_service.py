@@ -6,7 +6,7 @@ from uuid import uuid4
 
 import httpx
 
-from app.config import LEGISLATION_FILE
+from app.config import CONGRESS_API_KEY, LEGISLATION_FILE
 from app.services.llm_service import summarize_legislation
 from app.services.source_service import add_source
 from app.services.user_service import get_user
@@ -34,7 +34,7 @@ async def fetch_legislation(
             bill_type, bill_num = _parse_bill_number(bill_number)
             url = f"{CONGRESS_API_BASE}/bill/{congress}/{bill_type}/{bill_num}"
             async with httpx.AsyncClient(timeout=30) as client:
-                resp = await client.get(url, params={"format": "json"})
+                resp = await client.get(url, params={"format": "json", "api_key": CONGRESS_API_KEY})
                 resp.raise_for_status()
                 data = resp.json()
 
@@ -43,7 +43,7 @@ async def fetch_legislation(
                 results.append(_normalize_bill(bill))
         else:
             url = f"{CONGRESS_API_BASE}/bill/{congress}"
-            params: dict[str, Any] = {"limit": limit, "format": "json"}
+            params: dict[str, Any] = {"limit": limit, "format": "json", "api_key": CONGRESS_API_KEY}
             async with httpx.AsyncClient(timeout=30) as client:
                 resp = await client.get(url, params=params)
                 resp.raise_for_status()

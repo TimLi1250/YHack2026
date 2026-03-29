@@ -3,6 +3,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # --------------- paths ---------------
 DATA_DIR = Path(__file__).resolve().parent / "data"
 
@@ -24,6 +28,7 @@ OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 GOOGLE_CIVIC_API_KEY: str = os.getenv("GOOGLE_CIVIC_API_KEY", "")
 GEOCODE_API_KEY: str = os.getenv("GEOCODE_API_KEY", "")
+CONGRESS_API_KEY: str = os.getenv("CONGRESS_API_KEY", "")
 
 # --------------- LLM settings ---------------
 LLM_MAX_TOKENS: int = 2048

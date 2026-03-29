@@ -12,6 +12,7 @@ export interface UserRecord {
   gender?: string | null;
   state: string;
   city: string;
+  street_address?: string | null;
   language_preference: string;
   normalized_location?: { city: string; state: string };
   derived_traits?: string[];
@@ -149,8 +150,11 @@ export const users = {
 // ─── Ballots ─────────────────────────────────────────────────────────
 
 export const ballots = {
-  upcoming: (state: string, city: string) =>
-    request<BallotItem[]>(`/ballots/upcoming?state=${encodeURIComponent(state)}&city=${encodeURIComponent(city)}`),
+  upcoming: (state: string, city: string, streetAddress?: string | null) => {
+    const qs = new URLSearchParams({ state, city });
+    if (streetAddress) qs.set("street_address", streetAddress);
+    return request<BallotItem[]>(`/ballots/upcoming?${qs.toString()}`);
+  },
   get: (id: string) => request<BallotItem>(`/ballots/${id}`),
   summary: (id: string, userId?: string) =>
     request<BallotItem>(`/ballots/${id}/summary${userId ? `?user_id=${userId}` : ""}`),
@@ -168,11 +172,12 @@ export const ballots = {
 // ─── Candidates ──────────────────────────────────────────────────────
 
 export const candidates = {
-  list: (params?: { state?: string; city?: string; office?: string }) => {
+  list: (params?: { state?: string; city?: string; office?: string; street_address?: string | null }) => {
     const qs = new URLSearchParams();
     if (params?.state) qs.set("state", params.state);
     if (params?.city) qs.set("city", params.city);
     if (params?.office) qs.set("office", params.office);
+    if (params?.street_address) qs.set("street_address", params.street_address);
     const q = qs.toString();
     return request<CandidateRecord[]>(`/candidates${q ? `?${q}` : ""}`);
   },
@@ -214,6 +219,19 @@ export const meetings = {
   get: (id: string) => request<MeetingRecord>(`/meetings/${id}`),
   summary: (id: string, userId?: string) =>
     request<MeetingRecord>(`/meetings/${id}/summary${userId ? `?user_id=${userId}` : ""}`),
+};
+
+// ─── Elections ──────────────────────────────────────────────────────
+
+export const elections = {
+  list: (params?: { limit?: number; year?: number }) => {
+    const qs = new URLSearchParams();
+    if (params?.limit != null) qs.set("limit", String(params.limit));
+    if (params?.year != null) qs.set("year", String(params.year));
+    const q = qs.toString();
+    return request<ElectionRecord[]>(`/elections${q ? `?${q}` : ""}`);
+  },
+  get: (id: string) => request<ElectionRecord>(`/elections/${id}`),
 };
 
 // ─── Notifications ───────────────────────────────────────────────────
