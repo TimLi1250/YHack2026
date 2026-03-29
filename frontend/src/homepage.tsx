@@ -32,6 +32,10 @@ const interestOptions = [
   "Reproductive Rights", "Labor", "Student Debt",
 ];
 
+const headingFontStyle = {
+  fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+};
+
 /* ─── form types ───────────────────────────────────────────────────── */
 
 const defaultFormState = {
